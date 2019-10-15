@@ -1,2 +1,2 @@
 # Mathy
-Tools for solving math problems
+Simple and easy tools for solving math problems
