@@ -1362,7 +1362,7 @@ if __name__ == '__main__':
 
     
     
-    '''
+    
     ###解线性方程组
     A = [[1,2,-1],
         [2,1,3],
@@ -1372,6 +1372,10 @@ if __name__ == '__main__':
         [3]]
     #LU分解法
     L,U = lu(A)
+    print_matrix(A)
+    print_matrix(L,name ='L')
+    print_matrix(U,name ='U')
+    '''
     y = solve_linear_equation(L,b)
     print_vector(y)
     x = solve_linear_equation(U,y)

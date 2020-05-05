@@ -105,5 +105,9 @@ if __name__ == '__main__':
 
 
     '''
+    A = [[2,1,-4],[1,2,2],[-4,2,20]]
+    L,U=lu(A)
+    print_matrix(L,name = 'L')
+    print_matrix(U,name = 'U')
 
 

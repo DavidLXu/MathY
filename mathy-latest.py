@@ -26,3 +26,8 @@ from imports import *
 
 if __name__ == '__main__':
     print("welcome to mathy")
+    A = [[1,2],[4,3]]
+    L,U = lu(A)
+    print_matrix(L)
+    print_matrix(U)
+    print_matrix(multiply(L,U))

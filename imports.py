@@ -17,3 +17,4 @@ from basic import *
 from calculus import *
 from linalg import *
 from statistics import *
+from numeric import *
