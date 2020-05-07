@@ -20,7 +20,6 @@ def lu(A): # 仅限于各阶主子式都不为零，否则需要使用plu分解
     # A 必须是方阵
     L = eyes(len(A))
     U = zeros(len(A),len(A))
-    # 函数里面定义函数的操作，还真没见过有用的
     
     def sum_u(L,U,k,j):
         s = 0
@@ -36,12 +35,10 @@ def lu(A): # 仅限于各阶主子式都不为零，否则需要使用plu分解
     for k in range(len(A)):
         # 求U的第k行 (实际上是k+1)
         for j in range(k,len(A)):
-            U[k][j] = (A[k][j] - sum_u(L,U,k,j)) / L[k][k] # / L[k][k] 可删，为保持与U的对称性
-            #U[2][j] = (A[2][j] - L[2][0]*U[0][j] - L[2][1]*U[1][j]) / L[2][2] 
+            U[k][j] = (A[k][j] - sum_u(L,U,k,j)) / L[k][k]                                  # / L[k][k] 可删，为保持与U的对称性
 
         # 求L的第k列 (实际上是k+1)
         for i in range(k,len(A)):
-            #L[i][2] = (A[i][2] - L[i][0]*U[0][2] - L[i][1]*U[1][2]) / U[2][2]
             L[i][k] = (A[i][k] - sum_l(L,U,k,i)) / U[k][k]
     return L,U
 
@@ -90,8 +87,66 @@ def cholesky(A, mode = 'LLT'):
             D_sqrt[i][i] = sqrt(D_sqrt[i][i])
         return multiply(L,D_sqrt),multiply(D_sqrt,L_T)
 
+# 线性方程组的解法 一般记法，矩阵记法
+def norm_mat(A,):
+    pass
+# decompose A into D-L-U
+def dlu_decompose(A):
+    D = zeros(len(A),len(A))
+    L = zeros(len(A),len(A))
+    U = zeros(len(A),len(A))
+    for i in range(len(A)):
+        D[i][i] = A[i][i]
+    for j in range(len(A)):
+        for i in range(j+1,len(A)):
+            L[i][j] = -A[i][j]
+    for i in range(len(A)):
+        for j in range(i+1,len(A)):
+            U[i][j] = -A[i][j]
+    return D,L,U
+
+# 失败，没有收敛
+def jacobi_iteration(A,b):
+    D,L,U = dlu_decompose(A)
+    print_matrix(D)
+    print_matrix(L)
+    print_matrix(U)
+    B1 = multiply(inv(D), add_mat(L, U))
+    g1 = multiply(inv(D), b)
+    x = zeros(len(A),1)
+    for i in range(100):
+        x = add_mat(multiply(B1,x), g1)
+        print_vector(x)
+    return x
+
+def gauss_seidel_iteration(A):
+    '''
+    B2=(D-L)^(-1)*U
+    g2=(D-L)^(-1)*b
+    x=B2*x+g2
+    '''
+    pass
+
+# 松弛法
+def sor_iteration(A,w): # gauss_seidel 是一种特例
+    pass
 if __name__ == '__main__':
-            
+    '''
+    # 使用自己实现的函数计算第六题的LU分解        
+    A = [[2,1,-4],[1,2,2],[-4,2,20]]
+    L,U=lu(A)
+    print("A的LU分解")
+    print_matrix(L,name = 'L', precision=3)
+    print_matrix(U,name = 'U', precision=3)
+    b=[[-1],[0],[4]]
+    y = solve_linear_equation(L,b)
+    x = solve_linear_equation(U,y)
+    print("方程组的解为")
+    print_vector(x)
+    '''
+
+
+
     '''
     ###矩阵的cholesky分解测试
     A = [[1,2,-2],
@@ -105,9 +160,10 @@ if __name__ == '__main__':
 
 
     '''
-    A = [[2,1,-4],[1,2,2],[-4,2,20]]
-    L,U=lu(A)
-    print_matrix(L,name = 'L')
-    print_matrix(U,name = 'U')
-
-
+    
+    A = [[1,2,-2],
+        [2,5,-3],
+        [-2,-3,21]] 
+    b = randmat(3,1)
+    jacobi_iteration(A,b,)
+    print_matrix(A)

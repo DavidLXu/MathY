@@ -131,6 +131,12 @@ def transpose_square(A):
             B[i][j] = A[j][i]
     return B
 
+def add_mat(A,B):
+    C = zeros(len(A),len(A[0]))
+    for i in range(len(A)):
+        for j in range(len(A[0])):
+            C[i][j] = A[i][j]+B[i][j]
+    return C
 #perform matrix muliplication
 def multiply(A,B):
     #check if col of A is equal to row of B
@@ -750,8 +756,11 @@ def eigen_vector(A):
 
 
 if __name__ == "__main__":
-    print_matrix([[1,2]])
-
+    A = randmat(3,3)
+    B = randmat(3,3)
+    print_matrix(A,name = "A")
+    print_matrix(B,name = "B")
+    print_matrix(add_mat(A,B))
     '''
     ###解线性方程组
     A = [[1,2,-1],

@@ -1,1 +1,2 @@
-if __name__ == "__main__":
+from linalg import *
+from basic import *
