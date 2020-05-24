@@ -1,16 +1,31 @@
+import matplotlib.pyplot as plt
+from basic import *
 ############## Visual #############
 # no time to implement, try manim
 
+def plot(x,y):
+    plt.figure()
+    plt.plot(x,y)
+    plt.show()
+
+def scatter(x,y):
+    plt.figure()
+    plt.scatter(x,y)
+    plt.show()
+
+def plot_func(function,start = 0.1,end = 10,steps = 100):
+    x = linspace(start,end,steps)
+    y = [function(x[i]) for i in range(len(x))]
+    plot(x,y)
+
 #这两个draw函数效果不尽人意，再改进
 def draw_vector_2d(vec):
-    import matplotlib.pyplot as plt
     x = [0,vec[0][0]]
     y = [0,vec[0][1]]
     plt.plot(x,y,linestyle='-')
+    plt.show()
 
 def draw_arrow(vec):
-    import matplotlib.pyplot as plt
-
     ax = plt.plot()
     ax.arrow(0, 0, vec[0][0], vec[0][1],
              width=0.01,
@@ -21,7 +36,7 @@ def draw_arrow(vec):
              ec='b')
     plt.show()
 
-def show_figure():
-	
-	import matplotlib.pyplot as plt
-	plt.show()
+if __name__ == "__main__":
+
+    plot_func(lambda x: sqrt(exp(-x)*sin(x)**2))
+    #plot(linspace(0,10),mapping(lambda x:sin(x)**2,linspace(0,10)))

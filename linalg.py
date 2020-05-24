@@ -808,15 +808,6 @@ def mat2list(mat):
     pass
 
 
-def add_mat(A,B):
-    C = zeros(len(A),len(A[0]))
-    for i in range(len(A)):
-        for j in range(len(A[0])):
-            C[i][j] = A[i][j]+B[i][j]
-    return C
-
-
-
 
 if __name__ == "__main__":
     

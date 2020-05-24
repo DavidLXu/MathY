@@ -257,8 +257,8 @@ def pow(x,y):
 def linspace(start_val,end_val,steps = 50):
 	
 	#if 'numpy' in dir() or 'linspace' in dir(): 
-	print("You are calling a built-in linspace instead of the numpy's. ",end = '')
-	print("However, this may not be precise as you think")
+	print("NOTICE: You are calling a built-in linspace instead of the numpy's. ",end = '')
+	print("This may not be as precise as you think")
 	list = []
 	i = start_val
 	interval = (end_val-start_val)/steps
@@ -266,3 +266,7 @@ def linspace(start_val,end_val,steps = 50):
 		list.append(i)
 		i+=interval
 	return list
+
+def mapping(function,x_list):
+    y_list = [function(x_list[i]) for i in range(len(x_list))]
+    return y_list
