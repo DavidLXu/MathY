@@ -1,6 +1,6 @@
 # MathY manual
 
-Welcome to MathY! MathY is a simple math toolbox for **educational or recreational purpose** only. It is made by a current junior ME student who have wide and wild interests in math and programming. From the very beginning, MathY requires no other third party libraries for basic calculations. As the program grows bigger and bigger, when it comes to complex analysis and solving equations, only sympy is needed.) It is still under construction and needs your help! Feel free to reach me at xulixincn@163.com .
+Welcome to MathY! MathY is a simple math toolbox for **educational or recreational purpose** only. It is made by a current junior ME student who have wide and wild interests in math and programming. From the very beginning, MathY requires no other third party libraries for basic calculations. As the program grows bigger and bigger, when it comes to complex analysis and solving equations, only sympy is needed. :) It is still under construction and needs your help! Feel free to reach me at xulixincn@163.com .
 
 ## Basic operation
 
@@ -77,7 +77,7 @@ There may be some precission issues, but since MathY is a educational math libra
 
 ## Algebra
 
-Algebra is a important piece of math, especially for math beginners, where it is full of variables and unknowns, and it is pretty hard to implement from scratch. If you have to need to solve symbolic algebra problem, please use sympy.
+Algebra is an important part of math, especially for math beginners, where it is full of variables and unknowns, and it is pretty hard to implement from scratch. If you have to need to solve symbolic algebra problem, please use sympy.
 
 ## Calculus
 
