@@ -1,6 +1,6 @@
-# MathY manual
+# MathY 1.0.0
 
-Welcome to MathY! MathY is a simple math toolbox for **educational or recreational purpose** only. It is made by a current junior ME student who have wide and wild interests in math and programming. From the very beginning, MathY requires no other third party libraries for basic calculations. As the program grows bigger and bigger, when it comes to complex analysis and solving equations, only sympy is needed. :) It is still under construction and needs your help! Feel free to reach me at xulixincn@163.com .
+Welcome to MathY! MathY is a simple math toolbox for **educational or recreational purpose** only. It is made by a current junior ME student who have wide and wild interests in math and programming. From the very beginning, MathY requires no other third party libraries for basic calculations. Later on, in order to handle complex numerical problem, a bit of sympy is used, which is in a limited case. Overall, MathY is almost  a pure python math solver. It is still under construction and needs your help! Feel free to reach me at xulixincn@163.com .  :)
 
 ## Basic operation
 
@@ -73,7 +73,7 @@ arctan(x)
 
 From the very beginning, MathY is designed not to use any third-party libraries, and these functions are implemented purely with python grammas without even `import math`.
 
-There may be some precission issues, but since MathY is a educational math library, every functions is in a clearly defined way. It's really nice when seeing how math skyscraper is built using only basic python language properties, and it's a great way to gain a better understanding of mathematics.
+There may be some precision issues, but since MathY is a educational math library, every functions is in a clearly defined way. It's really nice when seeing how math skyscraper is built using only basic python language properties, and it's a great way to gain a better understanding of mathematics.
 
 ## Algebra
 
@@ -141,6 +141,10 @@ r = [[2,2,1]]
 NOTICE: All matrices and vectors in MathY are 2-dimensional
 If you try to use a single list to represent vectors,
 that may cause serious problems.
+When referencing items in vectors, don't forget to use
+vec[i][0] for the i-th item in a column vector, and 
+vec[0][i] for the i-th item in a row vector, where [0] is
+needed to keep the previous agreement.
 """
 # vector group
 g = [[[0],
