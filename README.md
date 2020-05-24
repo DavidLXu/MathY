@@ -2,48 +2,56 @@
 
 Welcome to MathY! MathY is a simple math toolbox for **educational or recreational purpose** only. It is made by a current junior ME student who have wide and wild interests in math and programming. From the very beginning, MathY requires no other third party libraries for basic calculations. Later on, in order to handle complex numerical problem, a bit of sympy is used, which is in a limited case. Overall, MathY is almost  a pure python math solver. It is still under construction and needs your help! Feel free to reach me at xulixincn@163.com .  :)
 
+## How to use?
+
+* Run in terminal: ` python -i mathy-latest.py`.(interactive mode)
+* Write your code in `mathy-latest.py`, under `if __name__ == "__main__:" `, then run the script. (script mode)
+* For windows users, run `MathY.bat` in MathY directory. (interactive mode)
+
+You can use `dir()` to have a quick look of all supported functions.
+
 ## Basic operation
 
-MathY is based on python, which means all pythonic characteristics is supported.  Each entry of calculation is behind two arrows " >> ". For elementary math learners, basic operations (+ - * / ...) can be used as follows:
+MathY is based on python, which means all pythonic characteristics is supported.  Each entry of calculation is behind three arrows " >>> ". For elementary math learners, basic operations (+ - * / ...) can be used as follows:
 
 ```python
->> 1+1
+>>> 1+1
 2
->> 2-1.2
+>>> 2-1.2
 0.8
->> 3*2
+>>> 3*2
 6
->> 3/5
+>>> 3/5
 0.6
 
 # some constants
->> pi
+>>> pi
 3.1415926535897932384626
->> e
+>>> e
 2.718281828459
 
 # some is—functions definition
->> is_even(3)
+>>> is_even(3)
 False
->> is_odd(3)
+>>> is_odd(3)
 True
->> is_prime(7)
+>>> is_prime(7)
 True
->> is_decimal(3.1)
+>>> is_decimal(3.1)
 True
->> is_integer(7)
+>>> is_integer(7)
 True
 
 # some basic functions
->> abs(-0.6)  # use Abs() for complex numbers (which is from sympy)
+>>> abs(-0.6)  # use Abs() for complex numbers (which is from sympy)
 0.6
->> floor(3.2)
+>>> floor(3.2)
 3
->> ceil(3.4)
+>>> ceil(3.4)
 4
->> min(1,2,3) 
+>>> min(1,2,3) 
 1
->> max(3,2,1)
+>>> max(3,2,1)
 3
 ```
 
@@ -86,21 +94,21 @@ In `mathy/calculus.py`, multiple hand written differential and integral numerica
 For instance, if you want to numerically find out the derivative of a given function at a given point, you may use:
 
 ```python
->> derivative(sin,0.1)
+>>> derivative(sin,0.1)
 0.9950041652613538
 ```
 
 You can change method by using optional parameters:
 
 ```python
->> derivative(tan,pi/4,method='backward',h=0.05)
+>>> derivative(tan,pi/4,method='backward',h=0.05)
 1.9062750736999057
 ```
 
 Or if you want to integrate a function over a certain interval:
 
 ```python
->> integrate(lambda x: x, 0,1)
+>>> integrate(lambda x: x, 0,1)
 0.4999999999999995
 ```
 
