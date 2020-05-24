@@ -23,11 +23,15 @@ Tips:
 2.To avoid ambiquity, please run the script in Python3
 """
 from imports import *
-
+def help():
+    with open(r'help.md', encoding="utf-8") as file:
+        print(file.read())
 if __name__ == '__main__':
-    print("welcome to mathy")
-    A = [[1,2],[4,3]]
-    L,U = lu(A)
-    print_matrix(L)
-    print_matrix(U)
-    print_matrix(multiply(L,U))
+    # print("welcome to mathy")
+    # A = [[1,1/2],[1/3,1/4]]
+    # print(eigen_value(A))
+    # L,U = lu(A)
+    # print_matrix(L)
+    # print_matrix(U)
+    # print_matrix(multiply(L,U))
+    help()

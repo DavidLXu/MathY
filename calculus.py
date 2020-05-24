@@ -45,9 +45,8 @@ def integrate_regular(function,start,end,precision = 2500):
 	for i in linspace(start,end,precision):
 		sum+=function(i)*(end-start)/precision
 	return float("%.16f"%sum)
-# simpson formula and trapezoid method belongs to newton cotes
-def integrate_simpson():
-	pass
+
+
 
 def integrate_gauss(function,start,end,n=3):
     # 高斯点及其求积系数列表
@@ -157,6 +156,27 @@ def integrate_gauss(function,start,end,n=3):
         summation +=function((end-start)*p[i]/2+(start+end)/2)*t[i]
     summation*=(end-start)/2
     return summation
-def integrate():
-    pass
 
+# simpson formula and trapezoid method belongs to newton cotes
+def integrate_trapezoid(f,a,b,n):
+    h = (b-a)/n; # 步长
+    xi = np.linspace(a,b,n+1) # n+1 个节点
+    Tn = h/2 * ((f(xi[0]))+2*sum(f(xi[1:n]))+f(xi[n]))
+    print("使用复化梯形公式求得：Tn = %.7f"%Tn)
+    return Tn
+
+def integrate_simpson(f,a,b,n):
+    h = (b-a)/(2*n); # 步长
+    xi = np.linspace(a,b,2*n+1) # n+1 个节点
+    #这里索引公式上有所区别
+    Sn = h/3 * (f(xi[0])+4*sum(f(xi[1:2*n:2])) + 2*sum(f(xi[2:2*n-1:2]))  + f(xi[2*n]))
+    print(sum(f(xi[1:2*n:2])))
+    print(sum(f(xi[2:2*n-1:2])))
+    print("使用复化Simpson公式求得：Sn = %.7f"%Sn)
+    return Sn
+
+def integrate(function,start,end,n=3):
+    # use gauss integration as backend
+    return integrate_gauss(function,start,end,n)
+if __name__ == "__main__":
+    print(integrate(lambda x: x, 0,1))

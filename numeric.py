@@ -87,6 +87,8 @@ def cholesky(A, mode = 'LLT'):
             D_sqrt[i][i] = sqrt(D_sqrt[i][i])
         return multiply(L,D_sqrt),multiply(D_sqrt,L_T)
 
+
+## 线性方程组的迭代法
 # 线性方程组的解法 一般记法，矩阵记法
 def norm_mat(A,):
     pass
@@ -105,32 +107,127 @@ def dlu_decompose(A):
             U[i][j] = -A[i][j]
     return D,L,U
 
-# 失败，没有收敛
-def jacobi_iteration(A,b):
+# 计算谱半径，有助于判断收敛性，用到了sympy 的复数模块
+def spectral_radius(A):
+    eigens = eigen_value(A) # 如果返回复数，是sympy.I
+    print(eigens)
+    max_value = 0
+    for value in eigens:
+        if sympy.Abs(value) > max_value:
+            max_value = sympy.Abs(value) # 使用sympy 求模
+    return max_value    # 谱半径：特征值模的最大值   
+
+# 传入A,b 计算雅可比迭代，若不收敛则报错
+def jacobi_iteration(A,b,epochs=20):
     D,L,U = dlu_decompose(A)
-    print_matrix(D)
-    print_matrix(L)
-    print_matrix(U)
+    print_matrix(D,name = "D")
+    print_matrix(L,name = "L")
+    print_matrix(U,name = "U")
     B1 = multiply(inv(D), add_mat(L, U))
+    print_matrix(B1,name = "B1 Jacobi matrix")
+    s_radius = spectral_radius(B1)
+    print("spectral radius: ",s_radius)
+    if s_radius >=1:    # 若没有收敛，报错
+        raise ValueError("spectral_radius >= 1, not converging!")
     g1 = multiply(inv(D), b)
     x = zeros(len(A),1)
-    for i in range(100):
+    for i in range(epochs):
         x = add_mat(multiply(B1,x), g1)
-        print_vector(x)
+        # print_vector(x)
     return x
 
-def gauss_seidel_iteration(A):
+def gauss_seidel_iteration(A,b,epochs=20):
     '''
     B2=(D-L)^(-1)*U
     g2=(D-L)^(-1)*b
     x=B2*x+g2
     '''
-    pass
+    D,L,U = dlu_decompose(A)
+    print_matrix(D,name = "D")
+    print_matrix(L,name = "L")
+    print_matrix(U,name = "U")
+    B2 = multiply(inv(sub_mat(D,L)),  U)
+    print_matrix(B2,name = "B2 Gauss-Seidel matrix")
+    s_radius = spectral_radius(B2)
+    print("spectral radius: ",s_radius)
+    if s_radius >=1:
+        raise ValueError("spectral_radius >= 1, not converging!")
+    g2 = multiply(inv(sub_mat(D,L)), b)
+    x = zeros(len(A),1)
+    for i in range(epochs):
+        x = add_mat(multiply(B2,x), g2)
+        # print_vector(x)
+    return x
 
 # 松弛法
-def sor_iteration(A,w): # gauss_seidel 是一种特例
+def sor_iteration(A,b,w,epochs=20): # gauss_seidel 是一种特例
     pass
+
+### 计算特征值
+# 瑞利商，可以帮助计算特征值
+def rayleigh(A,x):
+    return multiply(transpose(x),A,x)[0][0]/multiply(transpose(x),x)[0][0]
+
+# 幂迭代法 根据《数值分析萨奥尔中译本》第12章 （课本上稍有不同）
+def power_iteration(A,x,epochs=20):
+    for i in range(epochs):
+        u = times_const(1/norm(x),x) # 我们输入的向量归一化
+        x = multiply(A,u) # 输入的任意向量，经过足够多次数乘矩阵，方向接近于特征向量
+        lam = multiply(transpose(u),x) # 实际上到这一步，求得是瑞利商
+        print("---epoch",i,"---")
+        print("Eigenvalue",lam)
+        print_vector(u)
+    return lam,u # 返回特征值和特征向量
+
+A1 = [[3,-4,3],[-4,6,3],[3,3,1]]
+power_iteration(A1,[[1],[1],[1]])
+
+A2 = [[4,2,2],[2,5,1],[2,1,6]]
+power_iteration(A2,[[1],[1],[1]])
+
+
+
+# 反幂迭代法 
+def inv_power_iteration(A,x,epochs=10,method = "inv"):
+
+    for i in range(epochs):
+        u = times_const(1/norm(x),x)
+        
+        lam = multiply(transpose(u),A,u)
+        
+        x = solve_linear_equation(sub_mat(A,times_const(lam[0][0],eyes(len(A)))),u)
+        print("epoch",i,": ",lam)
+    return lam
+
+
+
+
 if __name__ == '__main__':
+
+    '''
+    A1 = [[1,2,-4],[1,1,2],[1,1,1]]
+    b = randmat(3,1)
+    print(rayleigh(A1,b))
+    jacobi_iteration(A1,b)
+    '''
+    '''
+    A2 = [[1,-2,1],[3,1,4],[2,-1,1]]
+    A3 = [[1,2,-2],[1,1,1],[2,2,1]]
+    
+    jacobi_iteration(A3,b)
+    '''
+    
+
+
+
+
+
+
+
+
+
+
+
     '''
     # 使用自己实现的函数计算第六题的LU分解        
     A = [[2,1,-4],[1,2,2],[-4,2,20]]
@@ -160,10 +257,3 @@ if __name__ == '__main__':
 
 
     '''
-    
-    A = [[1,2,-2],
-        [2,5,-3],
-        [-2,-3,21]] 
-    b = randmat(3,1)
-    jacobi_iteration(A,b,)
-    print_matrix(A)

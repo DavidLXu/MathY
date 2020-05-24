@@ -233,7 +233,7 @@ def ln(x):
 def log10(x):
     return ln(x)/ln(10)
 
-def log(x,y): #logarithm of y on the base of x
+def log(x,y): # logarithm of y on the base of x
 
     return ln(y)/ln(x)
 

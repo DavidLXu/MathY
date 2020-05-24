@@ -1,4 +1,5 @@
 from basic import *
+import sympy # 不得已，用了sympy作符号计算，为解特征值
 
 ###### linear algebra ######
 #print matrix in a more readable way
@@ -58,6 +59,9 @@ def print_vector_group(vec_tuple,precision=4):
             print("]")
         else:
             raise ValueError("NOT a vector!")
+# return shape of 2d mat, 3d or more not supported
+def shape(A):
+    return len(A),len(A[0])
 def nulls(col):
     a = []
     for i in range(col):
@@ -137,7 +141,15 @@ def add_mat(A,B):
         for j in range(len(A[0])):
             C[i][j] = A[i][j]+B[i][j]
     return C
-#perform matrix muliplication
+def sub_mat(A,B):
+    C = zeros(len(A),len(A[0]))
+    for i in range(len(A)):
+        for j in range(len(A[0])):
+            C[i][j] = A[i][j]-B[i][j]
+    return C   
+'''    
+
+# perform 2 matrix muliplication (good one, but not support 3 or more matrices)
 def multiply(A,B):
     #check if col of A is equal to row of B
     if(len(B)!=len(A[0])):
@@ -155,7 +167,45 @@ def multiply(A,B):
                 result[i][j] += A[i][k]*B[k][j]
     
     return result
-
+'''
+# improved version, multiple matrices supported
+# perform matrix muliplication
+def multiply(*matrices):
+    # 检查相邻矩阵的列数行数兼容性
+    for m in range(1,len(matrices)):
+        if(len(matrices[m])!=len(matrices[m-1][0])):
+            raise ValueError("COLUMN & ROW incompatible!")
+    # result_row = len(matrices[0])
+    # result_column = len(matrices[-1][0])
+    previousmat = matrices[0]
+    for m in range(1,len(matrices)):  
+        result_row = len(previousmat)
+        result_column = len(matrices[m][0])
+        # 生成用于存放每两个相乘结果的矩阵
+        result = [[0 for i in range(result_column)]for j in range(result_row)]
+    
+        common_rowcol = len(matrices[m])
+        #use traditional row times columns;
+        #but other ways can perform this like MIT 16.04 Gilbert Strang
+        for i in range(result_row):
+            for j in range(result_column):
+                for k in range(common_rowcol):
+                    result[i][j] += previousmat[i][k]*matrices[m][k][j]
+        previousmat = result
+    # result 矩阵的最终形状取决于第一个矩阵的行数和最后一个矩阵的列数
+    return result
+'''测试用代码
+A = randmat(400,400)
+B = randmat(400,21)
+C = randmat(21,400)
+print(1)
+D = multiply(multiply(A,B),C)
+print(2)
+E = multiply(A,B,C)
+print(3)
+print(D==E)
+print(shape(D))
+'''
 # matrix power, regular power see pow()
 def power(A,k):
 
@@ -187,7 +237,7 @@ def permutation(array):
     for i in range(n-1):
         for j in range(i+1,n):
             if array[i]>array[j]:
-                num+=1;
+                num+=1
     return num
     
 #返回一个数组的全排列，形式为二维数组，具体算法原理改日探讨
@@ -722,11 +772,11 @@ def is_orthogonal(A):
 
 def eigen_value(A):
     if check_matrix_square(A):
-        import sympy # 不得已，用了sympy作符号计算，为解特征值
+        
         λ = sympy.symbols("λ")
         E = eyes(len(A))
         S = matrix_add(A,times_const(-λ,E))
-        #print(sympy.simplify(det(S)))
+        print("特征多项式：",sympy.simplify(det(S)))
         return sympy.solve(det(S),λ)
 
     else:
@@ -751,16 +801,39 @@ def eigen_vector(A):
         ##############这里回代矩阵已经有了，就差一个返回解向量的函数
         print(S)
 
+def mat2list(mat):
+    """
+    convert matlab-like matrix into python list
+    """
+    pass
+
+
+def add_mat(A,B):
+    C = zeros(len(A),len(A[0]))
+    for i in range(len(A)):
+        for j in range(len(A[0])):
+            C[i][j] = A[i][j]+B[i][j]
+    return C
 
 
 
 
 if __name__ == "__main__":
+    
+
+
+
+
+
+
+
+    '''
     A = randmat(3,3)
     B = randmat(3,3)
     print_matrix(A,name = "A")
     print_matrix(B,name = "B")
     print_matrix(add_mat(A,B))
+    '''
     '''
     ###解线性方程组
     A = [[1,2,-1],
@@ -784,3 +857,5 @@ if __name__ == "__main__":
     P = grouptuple_2_matrix(schmidt_matrix(A)) # 把正交向量组转成正交矩阵
     print(is_orthogonal(P))
     '''
+a,b = randmat(3,1),randmat(3,1)
+print_vectors(a)
