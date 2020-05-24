@@ -1,8 +1,14 @@
 # some numerical algorithms
 from linalg import *
 from basic import *
-
+from visual import *
 ########### Numerical Analysis ##########
+
+
+
+
+
+
 # --------- Linear Algebra ----------
 ## A = LU decomposition
 '''
@@ -14,10 +20,27 @@ print(a)
 print(b)
 print(c)
 '''
+def principal_minor_check(A):
+    n = len(A)
+    for i in range(1,n+1):
+        D = zeros(i,i)
+        for j in range(i):
+            for k in range(i):
+                D[j][k] = A[j][k]
+        #print_matrix(D,name = str(i))
+        if det(D) == 0:
+            print("各阶顺序主子式不全为0")
+            return False
+    return True
 
 # A = LU decomposition
 def lu(A): # 仅限于各阶主子式都不为零，否则需要使用plu分解
     # A 必须是方阵
+    # 检查主子式的代码，非常吃计算量，所以就不检查了，若无法分解会直接报division by zero
+    '''
+    if principal_minor_check(A) == False:
+        #raise ValueError("各阶顺序主子式不全为0, 无法分解。如果继续进行，将产生除0错误")
+    '''
     L = eyes(len(A))
     U = zeros(len(A),len(A))
     
@@ -35,11 +58,11 @@ def lu(A): # 仅限于各阶主子式都不为零，否则需要使用plu分解
     for k in range(len(A)):
         # 求U的第k行 (实际上是k+1)
         for j in range(k,len(A)):
-            U[k][j] = (A[k][j] - sum_u(L,U,k,j)) / L[k][k]                                  # / L[k][k] 可删，为保持与U的对称性
+            U[k][j] = (A[k][j] - sum_u(L,U,k,j))      # / L[k][k]  可删，为保持与U的对称性
 
         # 求L的第k列 (实际上是k+1)
         for i in range(k,len(A)):
-            L[i][k] = (A[i][k] - sum_l(L,U,k,i)) / U[k][k]
+            L[i][k] = (A[i][k] - sum_l(L,U,k,i)) / U[k][k]  # 如果报错，是因为顺序主子式有0   
     return L,U
 
 # A = PLU decomposition
@@ -87,6 +110,41 @@ def cholesky(A, mode = 'LLT'):
             D_sqrt[i][i] = sqrt(D_sqrt[i][i])
         return multiply(L,D_sqrt),multiply(D_sqrt,L_T)
 
+# lu分解法求解矩阵方程
+def lu_solve(A,b):
+    '''
+
+    在不检查主子式的情况下，求解 1000x1000 的线性方程组花费60s
+    求解200x200线性方程组仅花费0.5s左右
+
+    '''
+    L,U = lu(A)
+    n = len(b)
+    y = zeros(n,1)
+    x = zeros(n,1)
+    
+    # 先解 y (nx1矩阵)
+    y[0][0] = b[0][0]
+    for i in range(1,n):
+        s = 0
+        for j in range(i): ## 这里的下标问题把我整懵了好一会。
+                #课本上 \Sigma_{j=1}{i-1}有i-1项，而这里有i项
+                # 但是这里的i是比真实下标小一个的，
+            s+=L[i][j]*y[j][0]
+        y[i][0] = b[i][0]-s # 为保持列向量所以最后要有一个[0]
+    #print_vector(y,name = "y2")
+    # 再解 x (nx1矩阵)
+    x[n-1][0] = y[n-1][0]/U[n-1][n-1]
+    for i in range(n-2,-1,-1):
+        s = 0
+        for j in range(i+1,n): # 这里下标有n-i-1项，课本是\Sigma_{j=i+1}{n}有n-i项，
+                        # 考虑i小1，实际项数和课本一样多 
+                        # 注意：以后遇到循环次数与下标相关时，不要从代数的角度比对是不是一样多
+                        # 比如之前的i与i-1，实际上是一样多的。
+            s+=U[i][j]*x[j][0]
+        x[i][0] = (y[i][0]-s)/(U[i][i])
+    #print_vector(x,name = "x2")
+    return x
 
 ## 线性方程组的迭代法
 # 线性方程组的解法 一般记法，矩阵记法
@@ -178,13 +236,13 @@ def power_iteration(A,x,epochs=20):
         print("Eigenvalue",lam)
         print_vector(u)
     return lam,u # 返回特征值和特征向量
-
+'''
 A1 = [[3,-4,3],[-4,6,3],[3,3,1]]
 power_iteration(A1,[[1],[1],[1]])
 
 A2 = [[4,2,2],[2,5,1],[2,1,6]]
 power_iteration(A2,[[1],[1],[1]])
-
+'''
 
 
 # 反幂迭代法 
@@ -202,8 +260,59 @@ def inv_power_iteration(A,x,epochs=10,method = "inv"):
 
 
 
-if __name__ == '__main__':
+##---Interpolation--
 
+# 用来显示牛顿差分表 (recursive)
+def difference_list(dlist): # Newton
+    if len(dlist)>0:
+        print(dlist)
+        prev,curr = 0,0
+        n = []
+        for i in dlist:
+            curr = i
+            n.append(curr - prev)
+            prev = i
+        n.pop(0)
+        difference_list(n)
+''' test code       
+difference_list([-1000,29,3,6,25,3,6,7,8,6,5,5,44,100000])
+
+difference_list([1,2,5,-6,8])
+'''
+# 拉格朗日插值
+def p(x,a):
+    s = 0
+    for i in range(len(a)):
+        s += a[i]*pow(x,i)
+    return s
+
+def lagrange_interpolate(x_list,y_list,x): # x是自变量
+    if len(x_list) != len(y_list):
+        raise ValueError("list x and list y is not of equal length!")
+    # 系数矩阵
+    A = []
+    for i in range(len(x_list)):
+        A.append([])
+        for j in range(len(x_list)):
+            A[i].append(pow(x_list[i],j))
+    #print_matrix(A)
+    b = []
+    for i in range(len(x_list)):
+        b.append([y_list[i]])
+    #print_vector(b)
+    # 求得各阶次的系数
+    a = lu_solve(A, b) # 用逆的方法，比较费时间，用数值分析方法优化一下
+    #print_vector(a)
+    a = transpose(a)[0] # change col vec a into 1 dimension
+    val = p(x,a)
+    print(x,val)
+    return val
+
+
+if __name__ == '__main__':
+    x = linspace(0,4*pi,30)
+    y = mapping(sin,x)
+    plot_func(lambda t: lagrange_interpolate(x,y,t),0,4*pi)
     '''
     A1 = [[1,2,-4],[1,1,2],[1,1,1]]
     b = randmat(3,1)

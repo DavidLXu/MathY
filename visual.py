@@ -13,7 +13,8 @@ def scatter(x,y):
     plt.scatter(x,y)
     plt.show()
 
-def plot_func(function,start = 0.1,end = 10,steps = 100):
+# extremely simple and useful!
+def plot_func(function,start = 0.1,end = 10,steps = 50):
     x = linspace(start,end,steps)
     y = [function(x[i]) for i in range(len(x))]
     plot(x,y)
@@ -38,5 +39,5 @@ def draw_arrow(vec):
 
 if __name__ == "__main__":
 
-    plot_func(lambda x: sqrt(exp(-x)*sin(x)**2))
-    #plot(linspace(0,10),mapping(lambda x:sin(x)**2,linspace(0,10)))
+    #plot_func(lambda x: sqrt(exp(-x)*sin(x)**2))
+    plot(linspace(0,10),mapping(lambda x:sin(x)**2,linspace(0,10)))

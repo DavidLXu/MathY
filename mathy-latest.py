@@ -23,15 +23,55 @@ Tips:
 2.To avoid ambiquity, please run the script in Python3
 """
 from imports import *
+import time
+
 def help():
-    with open(r'help.md', encoding="utf-8") as file:
+    with open(r'README.md', encoding="utf-8") as file:
         print(file.read())
+
 if __name__ == '__main__':
-    # print("welcome to mathy")
+    
+    localtime = time.asctime( time.localtime(time.time()) )
+    print (localtime)
+    print("Welcome to MathY--A Simple Tool For Solving Math Problems")
+    dir()
     # A = [[1,1/2],[1/3,1/4]]
     # print(eigen_value(A))
     # L,U = lu(A)
     # print_matrix(L)
     # print_matrix(U)
     # print_matrix(multiply(L,U))
-    help()
+   
+
+    '''
+    how to make a MathY intepreter?
+    import ast
+    import copy
+    def convertExpr2Expression(Expr):
+            Expr.lineno = 0
+            Expr.col_offset = 0
+            result = ast.Expression(Expr.value, lineno=0, col_offset = 0)
+
+            return result
+    def exec_with_return(code):
+        code_ast = ast.parse(code)
+
+        init_ast = copy.deepcopy(code_ast)
+        init_ast.body = code_ast.body[:-1]
+
+        last_ast = copy.deepcopy(code_ast)
+        last_ast.body = code_ast.body[-1:]
+
+        exec(compile(init_ast, "<ast>", "exec"), globals())
+        if type(last_ast.body[0]) == ast.Expr:
+            return eval(compile(convertExpr2Expression(last_ast.body[0]), "<ast>", "eval"),globals())
+        else:
+            exec(compile(last_ast, "<ast>", "exec"),globals())
+
+    while True:
+        code = input('>> ')
+        try:
+            exec_with_return(code)
+        except BaseException as err:
+            print(err)
+    '''

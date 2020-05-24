@@ -13,16 +13,22 @@ def print_matrix(A,precision=2,name = 'Matrix'):
         print()
     print(']') 
 # auto judge row vector and column vector and print
-def print_vector(A,precision=4):
+def print_vector(A,precision=4,name = ''):
 
     if(len(A) == 1):
-        print("Row Vector[")
+        if name == '':
+            print("Row Vector[")
+        else:
+            print(name+"[")
         print("\t",end='')
         for j in range(len(A[0])):
             print(format(A[0][j],"."+str(precision)+"f"),end='\t')
         print("\n]")
     elif(len(A[0]) == 1):
-        print("Column Vector[")
+        if name == '':
+            print("Column Vector[")
+        else:
+            print(name+"[")
         for i in range(len(A)):
             print("\t",format(A[i][0],"."+str(precision)+"f"))
         print("]")
@@ -282,7 +288,7 @@ def perm(array, k, m): # For the 1st time, use directly without reset,
         for i in range(k,m+1):
             array[k],array[i]=array[i],array[k]
             
-            perm(array, k + 1, m);
+            perm(array, k + 1, m)
             array[k],array[i]=array[i],array[k]
     
     return perm_list       
@@ -298,7 +304,7 @@ def det(A):
     '''
     #the third method is preferred as computer programs. 
     
-    #method 1
+    #method 1 纯模拟手工计算行列式，太慢 需要改变算法
     n = len(A) # 行数
     m = len(A[0]) # 列数
     if n!=m:
@@ -616,8 +622,13 @@ def matrix_shape(A):
     return (len(A),len(A[0]))
 # 等时机合适，引入矩阵对象，自带shape，维度，行列式，逆等特征
 
-# raise error when infinite solutions
+
+
+# straight method. any matrix greater than 7th order (around 5s) 
+# will be extremely slow, use lu_solve instead
+# inv() calls det(), det() calls perm() which is really time consuming
 def solve_linear_equation(A,b):
+    # TODO: raise error when infinite solutions
     return multiply(inv(A),b)
 
 def solve_augmented_mat(A):
@@ -813,11 +824,6 @@ if __name__ == "__main__":
     
 
 
-
-
-
-
-
     '''
     A = randmat(3,3)
     B = randmat(3,3)
@@ -848,5 +854,3 @@ if __name__ == "__main__":
     P = grouptuple_2_matrix(schmidt_matrix(A)) # 把正交向量组转成正交矩阵
     print(is_orthogonal(P))
     '''
-a,b = randmat(3,1),randmat(3,1)
-print_vectors(a)

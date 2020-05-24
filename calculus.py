@@ -157,6 +157,9 @@ def integrate_gauss(function,start,end,n=3):
     summation*=(end-start)/2
     return summation
 
+
+# below, numpy is needed because of historical reasons
+import numpy as np
 # simpson formula and trapezoid method belongs to newton cotes
 def integrate_trapezoid(f,a,b,n):
     h = (b-a)/n; # 步长
