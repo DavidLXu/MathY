@@ -168,7 +168,7 @@ Below are some most useful functions:
 print_matrix(A,precision=2,name = 'Matrix')
 print_vector(A,precision=4)
 print_vectors(*vec_tuple,precision=4)
-print_vector_group(vec_tuple,precision=4) # for vector group
+print_vector_group(vec_tuple,precision=4) # for vector group, where vec_tuple has a dimension 3
 
 # Show matrix property
 matrix_shape(A)
@@ -186,10 +186,27 @@ eyes(n)
 diag(*a)
 randmat(row,col,largest = 10)
 
+# Concatenate, split
+comb_col(*matrices)
+comb_row(*matrices)
+split_col(A)
+split_row(A)
+
+
+# Matrix elementary transformation
+exchange_rows(B,r1,r2) 
+exchange_cols(B,c1,c2)
+multiply_row(B,r,k)
+add_rows(B,r1,r2)
+add_rows_by_factor(B,r1,k,r2) # bad precision because of denominator
+
 # Matrix operation
 transpose(A)
 add_mat(A,B) # TODO: supports multiple inputs mat
 sub_mat(A,B)
+matrix_add(A,B) # same as add_mat, remains due to historical reasons
+matrix_minus(A,B) # same as sub_mat
+times_const(k,A) # return kA
 multiply(A,B,...) # supports multiple inputs mat
 power(A,k)
 det(A)
@@ -197,38 +214,86 @@ minor(A,row,col)
 adjoint(A)
 inv(A)
 rank(A)
-
-# Matrix elementary transformation
-exchange_rows(B,r1,r2)
-exchange_cols(B,c1,c2)
-multiply_row(B,r,k)
-add_rows(B,r1,r2)
-add_rows_by_factor(B,r1,k,r2) # bad precision because of denominator
-
-# Concatenate, split
-comb_col(*matrices)
-comb_row(*matrices)
-split_col(A)
-split_row(A)
+dot(a,b,appr = 10) # dot product of vectors
 
 # solve linear equation
 row_echelon(M)
 rref(A)
 solve_linear_equation(A,b)
 solve_augmented_mat(A)
-solve_lineq_homo(A,print_ans = False)
+solve_lineq_homo(A,print_ans = False) 
+
+norm(vec) # the second norm of vector (module, length)
+unitize(vec)
+schmidt(*vecs_or_A) # orthognalization
+
+# eigenstuffs
+eigen_value(A)
+eigen_polynomial(A)
+eigen_vector(A)
+```
+
+For now, basic linear algebra implementations are provided. In `mathy/numeric.py` more advanced numeric methods are provided.
+
+## Statistics
+
+仿照《概率论与数理统计》的讲解思路，待完成。
+
+## Numeric
+
+```python
+"""Interpolation"""
+
+"""Regression"""
+
+"""Non-linear equations"""
+"""Linear eqations"""
+lu(A)
+plu(A) # failed, needs to rewrite
+cholesky(A)
+norm_mat(A)
+dlu_decompose(A)
+spectral_radius(A)
+jacobi_iteration(A,b,epochs=20)
+gauss_seidel_iteration(A,b,epochs=20)
+sor_iteration(A,b,epochs=20)
+"""Eigens"""
+rayleigh(A,x)
+power_iteration(A,x,epochs=20)
+inv_power_iteration(A,x,epochs=10,method = "inv") # not yet implemented
 ```
 
 
 
-## Statistics
-
-## Numeric
-
-## Complex analysis
+## Complex Analysis
 
 
 
 ## Visualization
 
-uses manim as backend.
+Visualization is beyond the scope of MathY. You can use matplotlib for plots, or even manim to generate animations. However, MathY does provide some easy-to-use encapsulation for plots, for instance:
+
+```python
+def plot(x,y):
+    plt.figure()
+    plt.plot(x,y)
+    plt.show()
+def plot_func(function,start,end,steps = 100):
+    x = linspace(start,end,steps)
+    y = [function(x[i]) for i in range(len(x))]
+    plot(x,y)
+   
+# this makes plotting a function very easy and simple
+plot_func(lambda x: sqrt(exp(-x)*sin(x)**2),0,10)
+"""
+NOTICE:
+Since every functions in 
+'lambda x: sqrt(exp(-x)*sin(x)**2)'
+is implemented from scratch using numerical 
+methods, the final result may not be in the desired 
+precision. For more precise purposes, use math.sin(),
+math.exp(), or numpy.sin() numpy.exp().
+
+"""
+```
+
