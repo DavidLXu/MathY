@@ -23,7 +23,8 @@ Tips:
 2.To avoid ambiquity, please run the script in Python3
 """
 from imports import *
-import time
+
+
 
 def help():
     with open(r'README.md', encoding="utf-8") as file:
@@ -31,10 +32,33 @@ def help():
 
 if __name__ == '__main__':
     
-    localtime = time.asctime( time.localtime(time.time()) )
-    print (localtime)
-    print("Welcome to MathY--A Simple Tool For Solving Math Problems")
-    dir()
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     # A = [[1,1/2],[1/3,1/4]]
     # print(eigen_value(A))
     # L,U = lu(A)

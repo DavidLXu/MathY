@@ -111,8 +111,10 @@ def diag(*a):
             if i ==j:
                 A[i][j] = a[i]
     return A
-def randmat(row,col,largest = 10):#,property = "None"):
+def randmat(row,col = 0,largest = 10):#,property = "None"):
     import random
+    if col == 0:
+        col = row
     A = zeros(row,col)
     for i in range(row):
         for j in range(col):
@@ -304,7 +306,7 @@ def det(A):
     '''
     #the third method is preferred as computer programs. 
     
-    #method 1 纯模拟手工计算行列式，太慢 需要改变算法
+    #method 1 纯定义计算行列式，太慢 复杂度是阶乘
     n = len(A) # 行数
     m = len(A[0]) # 列数
     if n!=m:
@@ -339,6 +341,29 @@ def deepcopy(A):
     print(C,id(C),id(C[0]),id(C[0][0]))
     """
     return B
+
+def minor_mat(A,row,col):
+    B = deepcopy(A) #如果直接复制，会把传进来的A给修改了 浅复制二维数组的每个元素指向的行向量是一个地址
+    for i in range(len(B)):
+        del B[i][col]
+    del B[row]
+    return B
+
+def det_by_expansion(A):
+    n = len(A) # 行数
+    m = len(A[0]) # 列数
+    if n!=m:
+        raise ValueError("input NOT SQUARE matrix!")
+    if n == 1:
+        return A[0][0]
+    else:
+        result = 0
+        for i in range(n):
+            result += (-1)**(0+i)*det_by_expansion(minor_mat(A,0,i))*A[0][i]
+    return result
+
+
+
 #import copy  #自己写一个deepcopy函数，这样就不用调用这唯一的库函数了
 def minor(A,row,col):
     B = deepcopy(A) #如果直接复制，会把传进来的A给修改了 浅复制二维数组的每个元素指向的行向量是一个地址

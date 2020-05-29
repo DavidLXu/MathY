@@ -146,6 +146,16 @@ def lu_solve(A,b):
     #print_vector(x,name = "x2")
     return x
 
+# this is much quicker than det(), det_by_expansion(),
+# however, precision is a problem
+def det_by_lu(A):
+    L,U = lu(A)
+    prod1 = 1
+    prod2 = 1
+    for i in range(len(A)):
+        prod1*=L[i][i]
+        prod2*=U[i][i]
+    return prod1*prod2
 ## 线性方程组的迭代法
 # 线性方程组的解法 一般记法，矩阵记法
 def norm_mat(A,):
