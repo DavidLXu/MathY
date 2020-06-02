@@ -5,7 +5,7 @@ from sympy import *
 
 # 复数部分使用sympy提供的复数
 def module(z):
-
+    pass
 def exp2trig(z):
     print(round(ln(z))) 
 

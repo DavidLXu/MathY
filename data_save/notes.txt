@@ -1,0 +1,19 @@
+Blow contents are saved from MathY using "note()"
+Use "show_note()" to show note contents, or simply check here:
+
+
+Tue Jun  2 18:07:01 2020:
+today is a great day!
+
+Tue Jun  2 18:07:41 2020:
+这一次试试中文
+
+Tue Jun  2 18:24:43 2020:
+今后尝试使用MathY来解决日常计算，暴露出来的问题及时改进解决。
+
+Tue Jun  2 18:36:11 2020:
+问题记录：从bat运行MathY时，会出现无反应的问题，需要随意点击一个按键
+
+Tue Jun  2 18:41:56 2020:
+问题会偶尔出现
+

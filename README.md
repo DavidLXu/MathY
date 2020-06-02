@@ -1,6 +1,6 @@
 # MathY 1.0.0
 
-Welcome to MathY! MathY is a simple math toolbox for **educational or recreational purpose** only. It is made by a current junior ME student who have wide and wild interests in math and programming. From the very beginning, MathY requires no other third party libraries for basic calculations. Later on, in order to handle complex numerical problem, a bit of sympy is used, which is in a limited case. Overall, MathY is almost  a pure python math solver. It is still under construction and needs your help! Feel free to reach me at xulixincn@163.com .  :)
+Welcome to MathY! MathY is a simple math toolbox for **educational or recreational purpose** only. It is made by a current junior ME student who has wide and wild interests in math and programming. From the very beginning, MathY requires no other third party libraries for basic calculations. Later on, in order to handle complex numerical problems, a bit of sympy is used, which is in a limited case. Overall, MathY is almost  a pure python math solver. It is still under construction and needs your help! Feel free to reach me at xulixincn@163.com .  :)
 
 ## How to use?
 
@@ -10,7 +10,7 @@ Welcome to MathY! MathY is a simple math toolbox for **educational or recreation
 
 You can use `dir()` to have a quick look of all supported functions.
 
-## Basic operation
+## Basic operations
 
 MathY is based on python, which means all pythonic characteristics is supported.  Each entry of calculation is behind three arrows " >>> ". For elementary math learners, basic operations (+ - * / ...) can be used as follows:
 
@@ -81,11 +81,11 @@ arctan(x)
 
 From the very beginning, MathY is designed not to use any third-party libraries, and these functions are implemented purely with python grammas without even `import math`.
 
-There may be some precision issues, but since MathY is a educational math library, every functions is in a clearly defined way. It's really nice when seeing how math skyscraper is built using only basic python language properties, and it's a great way to gain a better understanding of mathematics.
+There may be some precision issues, but since MathY is an educational math library, every function is in a clearly-defined way. It's really nice when seeing how the math skyscraper is built using only basic python language properties, and it's a great way to gain a better understanding of mathematics.
 
 ## Algebra
 
-Algebra is an important part of math, especially for math beginners, where it is full of variables and unknowns, and it is pretty hard to implement from scratch. If you have to need to solve symbolic algebra problem, please use sympy.
+Algebra is an important part of math, especially for math beginners, where it is full of variables and unknowns, and it is pretty hard to implement from scratch. If you need to solve symbolic algebra problems, please use sympy.
 
 ## Calculus
 
@@ -98,7 +98,7 @@ For instance, if you want to numerically find out the derivative of a given func
 0.9950041652613538
 ```
 
-You can change method by using optional parameters:
+You can change the method by using optional parameters:
 
 ```python
 >>> derivative(tan,pi/4,method='backward',h=0.05)
@@ -129,7 +129,7 @@ Reluctant to admit, though, the reason I wrote this whole thing is because I had
 
 As a result, `mathy/linalg.py` may be the most verbose and detailed part of the whole program (for now).
 
-In MathY, matrices are represented as 2-layer lists. I know this is a bad idea for large matrix and fast computing (maybe a bad idea to use python to do all these stuff), but when it comes to readability and simplicity, especially for non-CS student who do not have the experience of reading high-level C++ code or complex algorithms, the list-form works the best.
+In MathY, matrices are represented as 2-layer lists. I know this is a bad idea for large matrix and fast computing (maybe a bad idea to use python to do all these stuff), but when it comes to readability and simplicity, especially for non-CS students who do not have the experience of reading high-level C++ code or complex algorithms, the list-form works the best.
 
 To clearly show the structure of vectors and matrices:
 
@@ -249,7 +249,7 @@ For now, basic linear algebra implementations are provided. In `mathy/numeric.py
 
 ## Statistics
 
-仿照《概率论与数理统计》的讲解思路，待完成。
+
 
 ## Numeric
 

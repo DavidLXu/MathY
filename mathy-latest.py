@@ -19,21 +19,15 @@ properties to achieve most of the functions;
 Math is magic!
 
 Tips:
-1.In Python2, divide(/) two numbers get an integer
+1.In Python2, divide(/) two numbers to get an integer
 2.To avoid ambiquity, please run the script in Python3
 """
 from imports import *
 
 
 
-def help():
-    with open(r'README.md', encoding="utf-8") as file:
-        print(file.read())
-
 if __name__ == '__main__':
-    
-    
-
+    a = 1
 
 
 

@@ -1,8 +1,32 @@
 # fuzzy mathematics
 # 致敬扎德祖师爷
+from linalg import matrix_shape, zeros
 
+# fuzzy matrix multiplication
+def fuzzymm(A,B):
+    # 模糊矩阵合成运算(模糊矩阵相乘)的Matlab实现移植
+    # 运算规则，先"取小后取大"
+    # 输入必须为二阶矩阵A为m行n列, B为n行p列;
+    m,n=matrix_shape(A)
+    q,p=matrix_shape(B) # 获得输入矩阵的维度信息
+    if n!=q:
+        raise ValueError('第一个矩阵的列数和第二个矩阵的行数不相同！')
+    else:
+        R=zeros(m,p) # 初始化矩阵
+        for k in range(m):    
+            for j in range(p):
+                temp=[]
+                for i in range(n):
+                    Min = min(A[k][i],B[i][j]) #求出第i对的最小值
+                    temp.append(Min) #将求出的最小值加入的数组中              
+                R[k][j]=max(temp)
+    return R
+    
+if __name__ == "__main__":
 
-
+    A = [[1,2],[3,4]]
+    B = [[5,6],[7,8]]
+    print(fuzzymm(A,B))
 
 
 

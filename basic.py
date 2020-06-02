@@ -1,6 +1,6 @@
 ###### basics mathematics ######
 # absolute values
-pi = 3.1415926535897932384626
+pi = 3.141592653589793238462643383279
 e = 2.718281828459
 def abs(x):
     if x>=0:
@@ -20,6 +20,7 @@ def ceil(x):
     else:
         return int(x)
 '''
+use built-in funtions instead!
 def round(x):
     if x>=0:
         if x-int(x)>=0.5:
@@ -31,7 +32,7 @@ def round(x):
             return int(x)-1
         else:
             return int(x)
-'''
+
 def min(*list):
     t = list[0]
     for i in range(len(list)):
@@ -45,7 +46,7 @@ def max(*list):
         if t<list[i]:
             t = list[i]
     return t
-    
+'''   
 ###some is—functions###
 
 def is_even(n):

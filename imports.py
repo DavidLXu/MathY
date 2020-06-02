@@ -1,6 +1,6 @@
 """
 I won't pretend like this is best practice, by in practice, it can be very nice 
-to simply have all of the functions and constants of mathy available without having 
+to simply have all of the functions and constants of MathY available without having 
 to worry about what namespace they come from.
 
 Rather than having a large pile of "from <module> import *" at the top of every such
@@ -18,4 +18,5 @@ from calculus import *
 from linalg import *
 from statistics import *
 from numeric import *
-import info
+from saveread import *
+from info import *
