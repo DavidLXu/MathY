@@ -1,5 +1,5 @@
-Blow contents are saved from MathY using "note()"
-Use "show_note()" to show note contents, or simply check here:
+Blow contents are saved from MathY using "note()".
+Use "show_note()" to show note contents.
 
 
 Tue Jun  2 18:07:01 2020:
