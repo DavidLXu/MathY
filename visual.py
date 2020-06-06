@@ -3,10 +3,12 @@ from basic import *
 ############## Visual #############
 # no time to implement, try manim
 
-def plot(x,y):
-    plt.figure()
+def plot(x,y,hold = False):
+    if hold == False:
+        plt.figure()
     plt.plot(x,y)
-    plt.show()
+    if hold == False:
+        plt.show()
 
 def scatter(x,y):
     plt.figure()
@@ -16,7 +18,8 @@ def scatter(x,y):
 # extremely simple and useful!
 def plot_func(function,start = 0.1,end = 10,steps = 50):
     x = linspace(start,end,steps)
-    y = [function(x[i]) for i in range(len(x))]
+    #y = [function(x[i]) for i in range(len(x))]
+    y = list(map(function,x))
     plot(x,y)
 
 #这两个draw函数效果不尽人意，再改进

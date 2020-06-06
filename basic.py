@@ -1,7 +1,11 @@
 ###### basics mathematics ######
 # absolute values
+
 pi = 3.141592653589793238462643383279
+π = pi
+
 e = 2.718281828459
+
 def abs(x):
     if x>=0:
         return x 
@@ -120,7 +124,7 @@ def factorial(x):
 # 隔项阶乘
 def factorial_2(x):
 
-    if(x==1 or x == 0):
+    if(x<=1):
         return 1
     else:
         return x*factorial_2(x-2);
@@ -213,14 +217,30 @@ def tan(x):
     return sin(x)/cos(x)
     
 def arcsin(x):
-    pass
-    
+    # 接近1时误差较大，建议使用分段，Taylor在1处展开
+    if abs(x) > 1:
+        raise ValueError("math domain error")
+    temp=0
+    for n in range(250):
+        temp+=factorial_2(2*n-1)/factorial_2(2*n)*x**(2*n+1)/(2*n+1)
+    return temp
+
 def arccos(x):
     pass
     
+#plot_func(arctan,0,10)在iPad上会闪退 别的值都可，单单10不可
 def arctan(x):
-    pass
-    
+    # taylor expansion only diverge in [-1,1]
+    # when come into |x|>1, 0<1/|x|<1
+    # arctanx=π/2-arctan(1/x)
+    temp = 0
+    if abs(x) < 1:
+        for i in range(100):
+            temp = temp + (-1)**i*x**(2*i+1)/(2*i+1)
+        return temp
+    else:
+        
+        return π/2-arctan(1/x)
  
 ###### exponential and logarithm
 def exp(x):
@@ -238,6 +258,15 @@ def log(x,y): # logarithm of y on the base of x
 
     return ln(y)/ln(x)
 
+def sinh(x):
+    return (exp(x)-exp(-x))/2
+    
+def cosh(x):
+    return (exp(x)+exp(-x))/2
+    
+def tanh(x):
+    return sinh(x)/cosh(x)
+    
 def pow(x,y):
     # y 可以是实数
     # 利用x^y=e^(ln(x)*y)

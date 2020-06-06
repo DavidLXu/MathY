@@ -318,22 +318,148 @@ def lagrange_interpolate(x_list,y_list,x): # x是自变量
     print(x,val)
     return val
 
+def euler(f = lambda x,y: y+sin(x),y0 = 1,start = 0,end = 1,h = 0.1):
+    """
+    solve the equation of
+    | y' = f(x,y)
+    | y(x0) = y0
+    put f(x,y) into f
+    """
+    n = int((end-start)/h) # 区间个数
+    x = [start+i*h for i in range(n+1)] # 生成x_i坐标点
+    y = [0 for i in range(n+1)] # 生成全0的y_i列表，等待后续循环修改
+    y[0] = y0   # 赋初值
+    for i in range(0,n):   # 最后一个值不需要被迭代    
+        y[i+1]= y[i]+h*f(x[i],y[i]) # 迭代公式
+    return x,y   
+
+def euler_improved(f = lambda x,y: y+sin(x),y0 = 1,start = 0,end = 1,h = 0.1):
+    """
+    solve the equation of
+    | y' = f(x,y)
+    | y(x0) = y0
+    put f(x,y) into f
+    """
+    n = int((end-start)/h) # 区间个数
+    x = [start+i*h for i in range(n+1)] # 生成x_i坐标点
+    y = [0 for i in range(n+1)] # 生成全0的y_i列表，等待后续循环修改
+    y[0] = y0   # 赋初值
+    for i in range(0,n):       # 最后一个值不需要被迭代  
+        y[i+1]= y[i]+h/2*(f(x[i],y[i])+f(x[i+1],y[i]+h*f(x[i],y[i]))) # 迭代公式
+    return x,y   
+
+def runge_kutta(f = lambda x,y: -y+x+1 ,y0 = 1,start = 0,end = 1,h = 0.1, order = 2):
+    n = int((end-start)/h) # 区间个数
+    x = [start+i*h for i in range(n+1)] # 生成x_i坐标点
+    y = [0 for i in range(n+1)] # 生成全0的y_i列表，等待后续循环修改
+    y[0] = y0   # 赋初值
+    if order == 2:
+        for i in range(n):  # 最后一个值不需要被迭代  
+            K1 = h*f(x[i],y[i])
+            K2 = h*f(x[i]+h,y[i]+K1)
+            y[i+1] = y[i]+0.5*(K1+K2)
+        return x,y
+    elif order == 4:
+        for i in range(n):  # 最后一个值不需要被迭代  
+            K1 = h*f(x[i],y[i])
+            K2 = h*f(x[i]+h/2,y[i]+K1/2)
+            K3 = h*f(x[i]+h/2,y[i]+K2/2)
+            K4 = h*f(x[i]+h,y[i]+K3)
+            y[i+1] = y[i]+1/6*(K1+2*K2+2*K3+K4)
+        return x,y
+    else:
+        raise ValueError("阶数请输入2或4！")
 
 if __name__ == '__main__':
-    x = linspace(0,4*pi,30)
-    y = mapping(sin,x)
-    plot_func(lambda t: lagrange_interpolate(x,y,t),0,4*pi)
+    x,y = runge_kutta(order = 2)
+    x1,y1 = runge_kutta(order = 4)
+
+    print("---二阶Runge-Kutta---")
+    for i in range(len(x)):
+        print("x: %.1f,  y: %f"%(x[i],y[i]))
+    print("---四阶Runge-Kutta---")  
+    for i in range(len(x1)):
+        print("x: %.1f,  y: %f"%(x1[i],y1[i]))
+    euler_plot = plt.plot(x,y)
+    euler_improved_plot = plt.plot(x1,y1)
+    legend = plt.legend(["Runge-Kutta-2","Runge-Kutta-4"],loc='upper left')
+    plt.show()
+
+
+
+
+
+
+
+
+
+    '''
+    第九章作业第一题
+    f = lambda x,y: y+sin(x)
+    y0 = 1
+    a = 0
+    b = 1
+    h = 0.1
+    x,y = euler(f,y0,a,b,h)
+    x1,y1 = euler_improved(f,y0,a,b,h)
+    print("---欧拉法---")
+    for i in range(len(x)):
+        print("x: %.1f,  y: %f"%(x[i],y[i]))
+    print("---改进欧拉法---")  
+    for i in range(len(x1)):
+        print("x: %.1f,  y: %f"%(x1[i],y1[i]))
+    euler_plot = plt.plot(x,y)
+    euler_improved_plot = plt.plot(x1,y1)
+    legend = plt.legend(["Euler","Euler imporved"],loc='upper left')
+    plt.show()
+    '''
+
+
+
+
+    '''
+    A = [[1,0.4,0.4],[0.4,1,0.8],[0.4,0.8,1]]
+    b = [[1],[2],[3]]
+    
+    gauss_seidel_iteration(A,b)
+    jacobi_iteration(A,b)
+    
+
+
+    difference_list([1,0,2,-1,3])
+
+    
+    #24
+    A = [[1,2,6],[2,5,15],[6,15,46]] 
+    L,U = lu(A)
+    print_matrix(L,name = "L")
+    print_matrix(U,name = "U")
+    print_matrix(multiply(L,U))
+    
+
+    #23
+    A = [[1,-1,1],[5,-4,3],[2,1,1]]
+    b = [[-4],[-12],[11]]
+    print_matrix(solve_linear_equation(A,b))
+    '''
     '''
     A1 = [[1,2,-4],[1,1,2],[1,1,1]]
     b = randmat(3,1)
     print(rayleigh(A1,b))
     jacobi_iteration(A1,b)
+
     '''
+
+
+
+
+
     '''
     A2 = [[1,-2,1],[3,1,4],[2,-1,1]]
     A3 = [[1,2,-2],[1,1,1],[2,2,1]]
     
     jacobi_iteration(A3,b)
+
     '''
     
 
