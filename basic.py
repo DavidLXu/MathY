@@ -127,7 +127,7 @@ def factorial_2(x):
     if(x<=1):
         return 1
     else:
-        return x*factorial_2(x-2);
+        return x*factorial_2(x-2)
 
 
 def combination(n,m): # order: selet_item,total_item
@@ -156,16 +156,14 @@ def sqrt_binarysearch(x):
 #开根号，牛顿迭代法，更快
 def sqrt_newton(x):
     if(x <= 0):
-        return 0;
+        return 0
     res = x   
     lastres = 0
     while(abs(lastres-res)>1e-8):
-        lastres = res;
-        res = (res + x/res)/2.0;
-    
-    
- 
-    return res;
+        lastres = res
+        res = (res + x/res)/2.0
+
+    return res
 
 #暂且把牛顿迭代法作为官方迭代法
 def sqrt(x):
@@ -226,15 +224,19 @@ def arcsin(x):
     return temp
 
 def arccos(x):
-    pass
+    if abs(x) > 1:
+        raise ValueError("math domain error")
+    temp=pi/2
+    for n in range(250):
+        temp-=factorial_2(2*n-1)/factorial_2(2*n)*x**(2*n+1)/(2*n+1)
+    return temp
     
-#plot_func(arctan,0,10)在iPad上会闪退 别的值都可，单单10不可
 def arctan(x):
     # taylor expansion only diverge in [-1,1]
     # when come into |x|>1, 0<1/|x|<1
     # arctanx=π/2-arctan(1/x)
     temp = 0
-    if abs(x) < 1:
+    if abs(x) <= 1:
         for i in range(100):
             temp = temp + (-1)**i*x**(2*i+1)/(2*i+1)
         return temp
@@ -283,19 +285,26 @@ def pow(x,y):
             for i in range(-y):
                 prod /= x
             return prod
-
-def linspace(start_val,end_val,steps = 50):
-	
-	#if 'numpy' in dir() or 'linspace' in dir(): 
-	print("NOTICE: You are calling a built-in linspace instead of the numpy's. ",end = '')
-	print("This may not be as precise as you think")
-	list = []
-	i = start_val
-	interval = (end_val-start_val)/steps
-	while i < end_val:
-		list.append(i)
-		i+=interval
-	return list
+def linspace(start_val,end_val,steps = 50,ending = "not included"):
+	# no matter included or not inculded, steps always equal to the number of points rather than intervals
+    ##if 'numpy' in dir() or 'linspace' in dir(): 
+    print("NOTICE: You are calling a built-in linspace instead of the numpy's. ",end = '')
+    print("This may not be as precise as you think")
+    l = []
+    i = start_val
+    
+    if ending == "included":
+        interval = (end_val-start_val)/(steps-1)
+        while i <= end_val:
+            l.append(i)
+            i+=interval
+        return l
+    else:
+        interval = (end_val-start_val)/steps
+        while i < end_val:
+            l.append(i)
+            i+=interval
+        return l
 
 def mapping(function,x_list):
     y_list = [function(x_list[i]) for i in range(len(x_list))]

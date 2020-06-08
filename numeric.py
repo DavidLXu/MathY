@@ -3,11 +3,26 @@ from linalg import *
 from basic import *
 from visual import *
 ########### Numerical Analysis ##########
+# 计算有效数字位数
+def significant_figures(x_appr,x_prec):
+    # 参考精确值x_prec计算x_appr的位数
+    p = 0 # the order of the approximated number
+    n = 0
+    # 以下把x_appr化成规格化浮点数，计算阶数 p
+    x = x_appr
+    while x >=1:
+        x /= 10
+        p += 1
+    while x < 0.1:
+        x *= 10
+        p -= 1
 
-
-
-
-
+    d = abs(x_appr-x_prec)
+    while True:       
+        n += 1
+        if d > 0.5 * 10**(p-n):
+            break
+    return n-1
 
 # --------- Linear Algebra ----------
 ## A = LU decomposition
@@ -272,28 +287,12 @@ def inv_power_iteration(A,x,epochs=10,method = "inv"):
 
 ##---Interpolation--
 
-# 用来显示牛顿差分表 (recursive)
-def difference_list(dlist): # Newton
-    if len(dlist)>0:
-        print(dlist)
-        prev,curr = 0,0
-        n = []
-        for i in dlist:
-            curr = i
-            n.append(curr - prev)
-            prev = i
-        n.pop(0)
-        difference_list(n)
-''' test code       
-difference_list([-1000,29,3,6,25,3,6,7,8,6,5,5,44,100000])
 
-difference_list([1,2,5,-6,8])
-'''
 # 拉格朗日插值
 def p(x,a):
     s = 0
     for i in range(len(a)):
-        s += a[i]*pow(x,i)
+        s += a[i]*x**i
     return s
 
 def lagrange_interpolate(x_list,y_list,x): # x是自变量
@@ -317,6 +316,69 @@ def lagrange_interpolate(x_list,y_list,x): # x是自变量
     val = p(x,a)
     print(x,val)
     return val
+
+# 用来显示牛顿差分表 (recursive)
+def difference_list(dlist): # Newton
+    if len(dlist)>0:
+        print(dlist)
+        prev,curr = 0,0
+        n = []
+        for i in dlist:
+            curr = i
+            n.append(curr - prev)
+            prev = i
+        n.pop(0)
+        difference_list(n)
+''' test code       
+difference_list([-1000,29,3,6,25,3,6,7,8,6,5,5,44,100000])
+'''
+
+
+def difference_quotient_list(y_list,x_list = []):
+    if x_list == []:
+        x_list = [i for i in range(len(y_list))]
+    print(y_list)
+    prev_list = y_list
+    dq_list = []
+    dq_list.append(prev_list[0])
+    for t in range(1,len(y_list)):
+        prev,curr = 0,0  
+        m = []
+        k = -1
+        for i in prev_list:
+            curr = i
+            m.append((curr - prev)/(x_list[k+t]-x_list[k]))
+            prev = i
+            k+=1
+        m.pop(0)     
+        prev_list = m
+        dq_list.append(prev_list[0])
+        print(m)
+    return dq_list
+
+def newton_interpolate(x_list,y_list,x):
+    coef = difference_quotient_list(y_list,x_list)
+    p = coef[0]
+    for i in range(1,len(coef)):
+        product = 1
+        for j in range(i):
+            product *= (x - x_list[j] )
+        p += coef[i]*product
+    return p
+
+def hermite(x0,x1,y0,y1,y0_prime,y1_prime,x):
+    alpha0 = lambda x: ((x-x1)/(x0-x1))**2 * (2*(x-x0)/(x1-x0)+1)
+    alpha1 = lambda x: ((x-x0)/(x1-x0))**2 * (2*(x-x1)/(x0-x1)+1)
+    beta0 = lambda x: ((x-x1)/(x0-x1))**2 * (x-x0)
+    beta1 = lambda x: ((x-x0)/(x1-x0))**2 * (x-x1)
+    H = alpha0(x)*y0 + alpha1(x)*y1 + beta0(x)*y0_prime + beta1(x)*y1_prime
+    return H
+    '''    插值函数测试代码
+    f = lambda x: hermite(0,1,5,1,1,0,x)
+    x = linspace(0,1,ending="included")
+    y = mapping(f,x)
+    plot(x,y)
+    '''
 
 def euler(f = lambda x,y: y+sin(x),y0 = 1,start = 0,end = 1,h = 0.1):
     """
@@ -371,21 +433,34 @@ def runge_kutta(f = lambda x,y: -y+x+1 ,y0 = 1,start = 0,end = 1,h = 0.1, order 
         raise ValueError("阶数请输入2或4！")
 
 if __name__ == '__main__':
-    x,y = runge_kutta(order = 2)
-    x1,y1 = runge_kutta(order = 4)
-
-    print("---二阶Runge-Kutta---")
-    for i in range(len(x)):
-        print("x: %.1f,  y: %f"%(x[i],y[i]))
-    print("---四阶Runge-Kutta---")  
-    for i in range(len(x1)):
-        print("x: %.1f,  y: %f"%(x1[i],y1[i]))
-    euler_plot = plt.plot(x,y)
-    euler_improved_plot = plt.plot(x1,y1)
-    legend = plt.legend(["Runge-Kutta-2","Runge-Kutta-4"],loc='upper left')
+    import numpy as np
+    f = lambda x: hermite(0,1,0,1,-1,-4,x)
+    x = np.linspace(0,1)#,121,ending="included")
+    print(x)
+    y = list(map(f,x))
+    plt.scatter([0,1],[0,1],color = "orange")
+    plt.plot(x,y)
     plt.show()
-
-
+    '''
+    
+    #知乎专栏演示龙格现象
+    import numpy as np
+    import matplotlib.pyplot as plt
+    f = lambda x: 1/(1+25*x**2)
+    # 待插值的元素值
+    x_points = linspace(-1,1,2,ending = "included")
+    print(x_points)
+    y_points = mapping(f,x_points)
+    # 牛顿插值
+    x = np.linspace(-1,1)
+    y = list(map(lambda t: lagrange_interpolate(x_points,y_points,t),x))
+    # 画图
+    plt.figure("newton interpolation")
+    plt.scatter(x_points,y_points,color = "orange")
+    plt.plot(x,y)
+    plt.legend(["newton interpolation","scattered points"])
+    plt.show()
+    '''
 
 
 
@@ -411,6 +486,21 @@ if __name__ == '__main__':
     euler_plot = plt.plot(x,y)
     euler_improved_plot = plt.plot(x1,y1)
     legend = plt.legend(["Euler","Euler imporved"],loc='upper left')
+    plt.show()
+
+    #第二题
+    x,y = runge_kutta(order = 2)
+    x1,y1 = runge_kutta(order = 4)
+
+    print("---二阶Runge-Kutta---")
+    for i in range(len(x)):
+        print("x: %.1f,  y: %f"%(x[i],y[i]))
+    print("---四阶Runge-Kutta---")  
+    for i in range(len(x1)):
+        print("x: %.1f,  y: %f"%(x1[i],y1[i]))
+    euler_plot = plt.plot(x,y)
+    euler_improved_plot = plt.plot(x1,y1)
+    legend = plt.legend(["Runge-Kutta-2","Runge-Kutta-4"],loc='upper left')
     plt.show()
     '''
 
