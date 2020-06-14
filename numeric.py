@@ -379,7 +379,80 @@ def hermite(x0,x1,y0,y1,y0_prime,y1_prime,x):
     y = mapping(f,x)
     plot(x,y)
     '''
+# 分段线性插值
+def segmented_linear_interpolate(xlist,ylist,x):
 
+    """
+    n = # of intervals, which is derived from len of xlist
+    len of xlist is always one item biger than # of intervals
+    """
+    #we have to make sure that items in xlist is in order
+    
+    data = dict(zip(xlist,ylist))
+    # 按照key排序，也就是xlist
+    data = sorted(data.items(),key=lambda item:item[0])
+    data = dict(data)
+    xlist = list(data.keys())
+    ylist = list(data.values())
+    n = len(xlist)-1
+    if n == 0:
+        raise ValueError("n should be greater or equal to 1")
+    # print("segmented interpolate, n =",n)
+    # 需要把新来的元素判断一下在哪个区间
+    i = -1
+    for t in xlist:
+        if x >= t:
+            i += 1
+    if i == -1 or i > len(xlist)-1:
+        raise ValueError("x should be between %f and %f"%(xlist[0],xlist[-1]))  
+    if i == len(xlist)-1:
+        return ylist[i]
+    return (x-xlist[i+1])/(xlist[i]-xlist[i+1])*ylist[i] + (x-xlist[i])/(xlist[i+1]-xlist[i])*ylist[i+1]
+
+# 分段Hermite插值
+def segmented_hermite_interpolate(x_list,y_list,y_prime_list,x):
+    """
+    n = # of intervals, which is derived from len of xlist
+    len of xlist is always one item biger than # of intervals
+    """
+    #we have to make sure that items in xlist is in order
+
+    # 按照x_list给y_list排序
+    data = dict(zip(x_list,y_list))
+    data = sorted(data.items(),key=lambda item:item[0])
+    data = dict(data)
+    xlist = list(data.keys())
+    ylist = list(data.values())
+    # 按照x_list给y_prime_list排序
+    data = dict(zip(x_list,y_prime_list))
+    data = sorted(data.items(),key=lambda item:item[0])
+    data = dict(data)
+    y_prime_list = list(data.values())
+
+
+    n = len(xlist)-1
+    if n == 0:
+        raise ValueError("n should be greater or equal to 1")
+    # print("segmented interpolate, n =",n)
+    # 需要把新来的元素判断一下在哪个区间
+    i = -1
+    for t in xlist:
+        if x >= t:
+            i += 1
+    
+    if i == -1 or i > len(xlist)-1:
+        raise ValueError("x should be between %f and %f"%(xlist[0],xlist[-1]))  
+    if i == len(xlist)-1:
+        return ylist[i]
+    
+    alpha0 = lambda x: ((x-xlist[i+1])/(xlist[i]-xlist[i+1]))**2 * (2*(x-xlist[i])/(xlist[i+1]-xlist[i])+1)
+    alpha1 = lambda x: ((x-xlist[i])/(xlist[i+1]-xlist[i]))**2 * (2*(x-xlist[i+1])/(xlist[i]-xlist[i+1])+1)
+    beta0 = lambda x: ((x-xlist[i+1])/(xlist[i]-xlist[i+1]))**2 * (x-xlist[i])
+    beta1 = lambda x: ((x-xlist[i])/(xlist[i+1]-xlist[i]))**2 * (x-xlist[i+1])
+    H = alpha0(x)*ylist[i] + alpha1(x)*ylist[i+1] + beta0(x)*y_prime_list[i] + beta1(x)*y_prime_list[i+1]
+    return H
+
+#-- Solving differential equation
 def euler(f = lambda x,y: y+sin(x),y0 = 1,start = 0,end = 1,h = 0.1):
     """
     solve the equation of
@@ -433,162 +506,4 @@ def runge_kutta(f = lambda x,y: -y+x+1 ,y0 = 1,start = 0,end = 1,h = 0.1, order 
         raise ValueError("阶数请输入2或4！")
 
 if __name__ == '__main__':
-    import numpy as np
-    f = lambda x: hermite(0,1,0,1,-1,-4,x)
-    x = np.linspace(0,1)#,121,ending="included")
-    print(x)
-    y = list(map(f,x))
-    plt.scatter([0,1],[0,1],color = "orange")
-    plt.plot(x,y)
-    plt.show()
-    '''
-    
-    #知乎专栏演示龙格现象
-    import numpy as np
-    import matplotlib.pyplot as plt
-    f = lambda x: 1/(1+25*x**2)
-    # 待插值的元素值
-    x_points = linspace(-1,1,2,ending = "included")
-    print(x_points)
-    y_points = mapping(f,x_points)
-    # 牛顿插值
-    x = np.linspace(-1,1)
-    y = list(map(lambda t: lagrange_interpolate(x_points,y_points,t),x))
-    # 画图
-    plt.figure("newton interpolation")
-    plt.scatter(x_points,y_points,color = "orange")
-    plt.plot(x,y)
-    plt.legend(["newton interpolation","scattered points"])
-    plt.show()
-    '''
-
-
-
-
-
-
-
-    '''
-    第九章作业第一题
-    f = lambda x,y: y+sin(x)
-    y0 = 1
-    a = 0
-    b = 1
-    h = 0.1
-    x,y = euler(f,y0,a,b,h)
-    x1,y1 = euler_improved(f,y0,a,b,h)
-    print("---欧拉法---")
-    for i in range(len(x)):
-        print("x: %.1f,  y: %f"%(x[i],y[i]))
-    print("---改进欧拉法---")  
-    for i in range(len(x1)):
-        print("x: %.1f,  y: %f"%(x1[i],y1[i]))
-    euler_plot = plt.plot(x,y)
-    euler_improved_plot = plt.plot(x1,y1)
-    legend = plt.legend(["Euler","Euler imporved"],loc='upper left')
-    plt.show()
-
-    #第二题
-    x,y = runge_kutta(order = 2)
-    x1,y1 = runge_kutta(order = 4)
-
-    print("---二阶Runge-Kutta---")
-    for i in range(len(x)):
-        print("x: %.1f,  y: %f"%(x[i],y[i]))
-    print("---四阶Runge-Kutta---")  
-    for i in range(len(x1)):
-        print("x: %.1f,  y: %f"%(x1[i],y1[i]))
-    euler_plot = plt.plot(x,y)
-    euler_improved_plot = plt.plot(x1,y1)
-    legend = plt.legend(["Runge-Kutta-2","Runge-Kutta-4"],loc='upper left')
-    plt.show()
-    '''
-
-
-
-
-    '''
-    A = [[1,0.4,0.4],[0.4,1,0.8],[0.4,0.8,1]]
-    b = [[1],[2],[3]]
-    
-    gauss_seidel_iteration(A,b)
-    jacobi_iteration(A,b)
-    
-
-
-    difference_list([1,0,2,-1,3])
-
-    
-    #24
-    A = [[1,2,6],[2,5,15],[6,15,46]] 
-    L,U = lu(A)
-    print_matrix(L,name = "L")
-    print_matrix(U,name = "U")
-    print_matrix(multiply(L,U))
-    
-
-    #23
-    A = [[1,-1,1],[5,-4,3],[2,1,1]]
-    b = [[-4],[-12],[11]]
-    print_matrix(solve_linear_equation(A,b))
-    '''
-    '''
-    A1 = [[1,2,-4],[1,1,2],[1,1,1]]
-    b = randmat(3,1)
-    print(rayleigh(A1,b))
-    jacobi_iteration(A1,b)
-
-    '''
-
-
-
-
-
-    '''
-    A2 = [[1,-2,1],[3,1,4],[2,-1,1]]
-    A3 = [[1,2,-2],[1,1,1],[2,2,1]]
-    
-    jacobi_iteration(A3,b)
-
-    '''
-    
-
-
-
-
-
-
-
-
-
-
-
-    '''
-    # 使用自己实现的函数计算第六题的LU分解        
-    A = [[2,1,-4],[1,2,2],[-4,2,20]]
-    L,U=lu(A)
-    print("A的LU分解")
-    print_matrix(L,name = 'L', precision=3)
-    print_matrix(U,name = 'U', precision=3)
-    b=[[-1],[0],[4]]
-    y = solve_linear_equation(L,b)
-    x = solve_linear_equation(U,y)
-    print("方程组的解为")
-    print_vector(x)
-    '''
-
-
-
-    '''
-    ###矩阵的cholesky分解测试
-    A = [[1,2,-2],
-        [2,5,-3],
-        [-2,-3,21]] 
-    a,c = cholesky(A,mode = "LLT")
-    print_matrix(a,name = "L")
-    print_matrix(c,name = "LT")
-
-    print_matrix(multiply(a,c))#multiply(b,c)))
-
-
-    '''
+    pass

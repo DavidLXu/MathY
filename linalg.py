@@ -1,6 +1,7 @@
 from basic import *
 import sympy # 不得已，用了sympy作符号计算，为解特征值
 
+
 ###### linear algebra ######
 #print matrix in a more readable way
 def print_matrix(A,precision=2,name = 'Matrix'):
@@ -12,6 +13,7 @@ def print_matrix(A,precision=2,name = 'Matrix'):
             print(format(A[i][j],"."+str(precision)+"f"),end='\t')
         print()
     print(']') 
+
 # auto judge row vector and column vector and print
 def print_vector(A,precision=4,name = ''):
 
@@ -65,6 +67,12 @@ def print_vector_group(vec_tuple,precision=4):
             print("]")
         else:
             raise ValueError("NOT a vector!")
+
+# simplify the function
+def printm(A):
+    print_matrix(A)
+def printv(A):
+    print_vector(A)       
 # return shape of 2d mat, 3d or more not supported
 def shape(A):
     return len(A),len(A[0])
@@ -202,6 +210,11 @@ def multiply(*matrices):
         previousmat = result
     # result 矩阵的最终形状取决于第一个矩阵的行数和最后一个矩阵的列数
     return result
+
+# simplify the function    
+def mul(A,B):
+    return multiply(A,B)
+
 '''测试用代码
 A = randmat(400,400)
 B = randmat(400,21)
@@ -214,6 +227,14 @@ print(3)
 print(D==E)
 print(shape(D))
 '''
+"""此种运算符重载必须是一种全新的对象
+def __mul__(self,other):
+    print('__mul__被调用')
+    return multiply(self,other)
+A = [[1,2],[3,4]]
+B = randmat(2,5)
+print(A*B)
+"""
 # matrix power, regular power see pow()
 def power(A,k):
 
@@ -699,7 +720,7 @@ def solve_lineq_homo(A,print_ans = False):#这个暂时是齐次的，require一
 # 点积，自适应行向量and列向量
 def dot(a,b,appr = 10):
     if matrix_shape(a)!=matrix_shape(b):
-        raise ValueError("inputs should be VECTORS of SAME TYPE!")
+        raise ValueError("inputs should be VECTORS of SAME TYPE. For matrix multiplication, use mul() or multiply()")
     elif len(a)!= 1 and len(a[0])!= 1:
         raise ValueError("inputs should be VECTORS!")
     if len(a) == 1: # 说明是行向量

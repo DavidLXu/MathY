@@ -54,12 +54,7 @@ if __name__ == '__main__':
 
 
 
-    # A = [[1,1/2],[1/3,1/4]]
-    # print(eigen_value(A))
-    # L,U = lu(A)
-    # print_matrix(L)
-    # print_matrix(U)
-    # print_matrix(multiply(L,U))
+
    
 
     '''
