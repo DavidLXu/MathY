@@ -1,4 +1,6 @@
 # 下面是一些使用MathY的案例，包含一些计算方法作业题和知乎专栏分享用到的源码
+# 注意：严谨的数值计算请使用MATLAB，MathY是一个娱乐性质的数学库
+# 如果MathY能在数值分析的算法方面帮助到你，欢迎star一下本项目 ;)
 
 from basic import *
 from calculus import *
@@ -146,7 +148,7 @@ jacobi_iteration(A,b) # 因为不收敛而报错
 # 差分表
 difference_list([1,0,2,-1,3])
 # 差商表
-
+difference_quotient_list([1,0,2,-1,3])
 '''
 ###===================
 '''

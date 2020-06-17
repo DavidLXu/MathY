@@ -47,3 +47,12 @@ Sun Jun  7 00:43:00 2020:
 Sun Jun  7 19:35:19 2020:
 数值微积分方法在numeric.py已经有了多种具体实现，封装以后在calculus.py里面实现简单的调用（不知道原理的人k也可以无障碍使用）
 
+Wed Jun 17 23:53:59 2020:
+增加了对带有未知数矩阵的rref和row_echelon的支持，sympy在这一块做得非常好，相应的运算符都重载了，不需要改动太大，而且解决了精度问题。参见row_echelon_with_variable和rref_with_variable,以及row_echelon_with_variable_display_process
+
+Wed Jun 17 23:55:03 2020:
+当print_matrix的参数type设置为variable时，就可以输出带未知数的矩阵
+
+Thu Jun 18 00:18:36 2020:
+if var_type == 'constant'or var_type == 'auto'而不要写if var_type == 'constant' or 'auto'
+

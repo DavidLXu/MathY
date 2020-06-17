@@ -3,14 +3,50 @@ import sympy # 不得已，用了sympy作符号计算，为解特征值
 
 
 ###### linear algebra ######
+#input like matlab, simplify migration matlab code
+def mat(mat_str):
+    """
+    input: A = mat("1 2 3;4 5 6;7 8 9") or mat("1,2,3;4,5,6;7,8,9") (still can't deal with 1,2 3; 4,5 6)
+    output: A = [[1,2,3],[4,5,6],[7,8,9]]
+    """
+    A = mat_str.split(";")
+    for i in range(len(A)):
+        if ',' in A[i]:
+            A[i] = A[i].split(',')
+            while '' in A[i]:
+                A[i].remove('')
+            A[i] = list(map(float,A[i]))
+        if ' ' in A[i]:
+            A[i] = A[i].split(' ')
+            while '' in A[i]:
+                A[i].remove('')
+            A[i] = list(map(float,A[i]))
+         
+    return A
+
 #print matrix in a more readable way
-def print_matrix(A,precision=2,name = 'Matrix'):
+def print_matrix(A,precision=2,name = 'Matrix',var_type = "auto"):
+    """
+    var_type = "constant"   常数矩阵，以precision精度打印
+    var_type = "variable"   含有sympy变量的矩阵, multivariable supported
+    var_type = "auto"       automatically decide type
+    """
     print(name+"[")
+
+    # check if there're variables in matrix, if so, "precision" will be invalid
+    if var_type == "auto":
+        for a in range(len(A)):
+            for b in range(len(A[0])): 
+                if type(A[a][b]) == sympy.symbol.Symbol:
+                    var_type = "variable"
+                    break
     for i in range(len(A)):
         print("\t",end='')
         for j in range(len(A[0])):  
-                
-            print(format(A[i][j],"."+str(precision)+"f"),end='\t')
+            if var_type == "constant" or var_type == "auto": 
+                print(format(A[i][j],"."+str(precision)+"f"),end='\t')
+            elif var_type == "variable":
+                print(format(A[i][j]),end='\t')
         print()
     print(']') 
 
@@ -595,6 +631,31 @@ def row_echelon(M):
 
     return approximate_matrix(A,8)  # 精度上还是有问题，折衷之计
 
+# convert to row echelon with sympy unkowns 
+# 带有sympy未知数的矩阵用这个函数可以化成行阶梯，这种方法不存在精度问题
+def row_echelon_with_variable(M):
+    # row,col 用于定位非零首元
+    A = deepcopy(M)
+    row = 0
+    col = 0
+    
+    while row<len(A) and col<len(A[0]):
+        if is_nonzero(A[row][col]):
+            for i in range(row+1,len(A)):
+                add_rows_by_factor(A,i,-A[i][col]/A[row][col],row)
+            row += 1 #加到最后会溢出，不满足行列判断条件，跳出循环
+            col += 1 #
+
+        else:
+            if below_all_zero(A,row,col):
+                col+=1 #如果这个元素之下全都是0，就开始看下一列
+            else:
+                
+                i,j = row,col
+                while is_zero(A[i][j]) and i<len(A)-1:#
+                    i+=1
+                exchange_rows(A,row,i)
+    return A
 
 def row_echelon_display_process(M):
     # 写一个模拟人工化简矩阵的函数，可能超长
@@ -630,6 +691,39 @@ def row_echelon_display_process(M):
                 print("exchange r",row+1,"and r",i+1)
                 print_matrix(A)
     return approximate_matrix(A,6)  # 精度上还是有问题，折衷之计
+
+def row_echelon_with_variable_display_process(M):
+    # row,col 用于定位非零首元
+    A = deepcopy(M)
+    row = 0
+    col = 0
+    print("original matrix")
+    print_matrix(A,type = "variable")
+    while row<len(A) and col<len(A[0]):
+        if is_nonzero(A[row][col]):
+            for i in range(row+1,len(A)):
+                #add_rows_by_factor_approximate(A,i,-A[i][col]/A[row][col],row) # 这里精度限制在10位，计算 -A[i][col]/A[row][col] 时
+                k =  -A[i][col]/A[row][col]                                   # 除法精度达不到要求 相加会消不掉，所以取一个能保证消掉的精度
+                add_rows_by_factor(A,i,k,row)
+                if k != 0:
+                    print('r',i+1,"+(",k,")r",row+1)
+                    print_matrix(A,type = "variable")
+
+            row += 1 #加到最后会溢出，不满足行列判断条件，跳出循环
+            col += 1 #
+
+        else:
+            if below_all_zero(A,row,col):
+                col+=1 #如果这个元素之下全都是0，就开始看下一列
+            else:
+                
+                i,j = row,col
+                while is_zero(A[i][j]) and i<len(A)-1:#
+                    i+=1
+                exchange_rows(A,row,i)
+                print("exchange r",row+1,"and r",i+1)
+                print_matrix(A,type = "variable")
+    return A
 
 # 接收row_echelon的矩阵，找到pivot的位置，返回几个下标的tuple，在求rref时用得到
 def find_pivot(A):
@@ -867,7 +961,9 @@ def mat2list(mat):
 
 
 if __name__ == "__main__":
-    
+    a = sympy.symbols('a')
+    A = [[a,1],[2,3]]
+    print(row_echelon_unknown(A))
 
 
     '''

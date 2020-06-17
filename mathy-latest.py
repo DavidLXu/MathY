@@ -29,7 +29,7 @@ from imports import *
 
 if __name__ == '__main__':
     a = 1
-    
+    x,y = sympy.symbols('x y')
 
 
 
