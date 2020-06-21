@@ -158,19 +158,27 @@ def integrate_gauss(function,start,end,n=3):
     return summation
 
 
-# below, numpy is needed because of historical reasons
-import numpy as np
-# simpson formula and trapezoid method belongs to newton cotes
+# # below, numpy is needed because of historical reason
+# below, custom linspace is implemented
+# import numpy as np
+# simpson formula and trapezoid method belongs to newton cote
+def linspace(a,b,n):
+    if n == 1:
+        return [a]
+    else:
+        step = (b - a) / (n - 1)
+        return [a + step * i for i in range(0,n)]
+
 def integrate_trapezoid(f,a,b,n):
     h = (b-a)/n; # 步长
-    xi = np.linspace(a,b,n+1) # n+1 个节点
+    xi = linspace(a,b,n+1) # n+1 个节点
     Tn = h/2 * ((f(xi[0]))+2*sum(f(xi[1:n]))+f(xi[n]))
     print("使用复化梯形公式求得：Tn = %.7f"%Tn)
     return Tn
 
 def integrate_simpson(f,a,b,n):
     h = (b-a)/(2*n); # 步长
-    xi = np.linspace(a,b,2*n+1) # n+1 个节点
+    xi = linspace(a,b,2*n+1) # n+1 个节点
     #这里索引公式上有所区别
     Sn = h/3 * (f(xi[0])+4*sum(f(xi[1:2*n:2])) + 2*sum(f(xi[2:2*n-1:2]))  + f(xi[2*n]))
     print(sum(f(xi[1:2*n:2])))
