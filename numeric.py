@@ -7,7 +7,8 @@ try:
 except ImportError:
     visual = False
 finally:
-    from visual import *
+    if visual:
+        from visual import *
 ########### Numerical Analysis ##########
 # 计算有效数字位数
 def significant_figures(x_appr,x_prec):
