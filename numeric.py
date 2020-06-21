@@ -1,7 +1,13 @@
 # some numerical algorithms
 from linalg import *
 from basic import *
-from visual import *
+try:
+    visual = True
+    import matplotlib.pyplot
+except ImportError:
+    visual = False
+finally:
+    from visual import *
 ########### Numerical Analysis ##########
 # 计算有效数字位数
 def significant_figures(x_appr,x_prec):
