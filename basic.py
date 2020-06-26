@@ -268,7 +268,9 @@ def cosh(x):
     
 def tanh(x):
     return sinh(x)/cosh(x)
-    
+''' 
+实数pow可以用python自带的**实现，故移除
+新的pow功能为向量对应项求幂，在机器学习当中大量使用   
 def pow(x,y):
     # y 可以是实数
     # 利用x^y=e^(ln(x)*y)
@@ -285,6 +287,7 @@ def pow(x,y):
             for i in range(-y):
                 prod /= x
             return prod
+'''
 def linspace(start_val,end_val,steps = 50,ending = "not included"):
 	# no matter included or not inculded, steps always equal to the number of points rather than intervals
     ##if 'numpy' in dir() or 'linspace' in dir(): 

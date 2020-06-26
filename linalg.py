@@ -105,8 +105,8 @@ def print_vector_group(vec_tuple,precision=4):
             raise ValueError("NOT a vector!")
 
 # simplify the function
-def printm(A):
-    print_matrix(A)
+def printm(A,precision = 2):
+    print_matrix(A,precision)
 def printv(A):
     print_vector(A)       
 # return shape of 2d mat, 3d or more not supported
@@ -198,7 +198,12 @@ def sub_mat(A,B):
     for i in range(len(A)):
         for j in range(len(A[0])):
             C[i][j] = A[i][j]-B[i][j]
-    return C   
+    return C  
+
+def add(A,B):
+    return add_mat(A,B)
+def sub(A,B):
+    return sub_mat(A,B)
 '''    
 
 # perform 2 matrix muliplication (good one, but not support 3 or more matrices)
@@ -251,6 +256,16 @@ def multiply(*matrices):
 def mul(A,B):
     return multiply(A,B)
 
+def pow(A,k):
+    """
+    return power of items in mat respectively
+    """
+    B = zeros(len(A),len(A[0]))
+    for i in range(len(A)):
+        for j in range(len(A[0])):
+            B[i][j] = A[i][j]**k
+    return B
+
 '''测试用代码
 A = randmat(400,400)
 B = randmat(400,21)
@@ -279,6 +294,21 @@ def power(A,k):
         return multiply(power(A,k),A)
     if k == 0:
         return eyes(len(A))
+def sum_row(mat):
+    """
+    summation by row, returns col vec
+    """
+    res_col = [[sum(mat[i])] for i in range(len(mat))]
+    return res_col
+
+def sum_col(mat):
+    """
+    summation by col, returns row vec
+    """
+    mat = transpose(mat)
+    res_row = [[sum(mat[i]) for i in range(len(mat))]]
+    return res_row
+
 
 #calculates the permutation of a set, used for calculating determinants
 def permutation_sign(array):
@@ -963,7 +993,7 @@ def mat2list(mat):
 if __name__ == "__main__":
     a = sympy.symbols('a')
     A = [[a,1],[2,3]]
-    print(row_echelon_unknown(A))
+
 
 
     '''

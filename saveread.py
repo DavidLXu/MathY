@@ -37,6 +37,9 @@ def save_matrix(data,filename):
     file.close()
     print("%d rows, %d columns saved."%(m,n))
 
+def readmat(filename,datatype = float):
+    return read_matrix(filename,datatype)
+
 
 def note(text):
     with open('data_save/notes.txt', 'a+') as f:

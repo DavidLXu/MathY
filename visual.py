@@ -10,17 +10,19 @@ def plot(x,y,hold = False):
     if hold == False:
         plt.show()
 
-def scatter(x,y):
-    plt.figure()
+def scatter(x,y,hold = False):
+    if hold == False:
+        plt.figure()
     plt.scatter(x,y)
-    plt.show()
+    if hold == False:
+        plt.show()
 
 # extremely simple and useful!
-def plot_func(function,start = 0.1,end = 10,steps = 50):
+def plot_func(function,start = 0.1,end = 10,steps = 50,hold = False):
     x = linspace(start,end,steps)
     #y = [function(x[i]) for i in range(len(x))]
     y = list(map(function,x))
-    plot(x,y)
+    plot(x,y,hold)
 
 #这两个draw函数效果不尽人意，再改进
 def draw_vector_2d(vec):

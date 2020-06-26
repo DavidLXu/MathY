@@ -1,0 +1,78 @@
+from imports import *
+
+def hypotheses(X,theta):
+    if(len(theta) == 1):
+        theta = transpose(theta)
+    return mul(X,theta)
+
+##---cost functions---
+def mse_loss(X,y,theta):
+    """
+    mean squared error
+    L = (y - f(x))**2
+    X: table of data (m*n)
+    y: vector of output (m*1 supervised true value)
+    theta: vector of parameters (nx1 col vec, but 1xn row vec also supported)
+    """
+    inner = pow(sub_mat(hypotheses(X,theta),y),2)
+    #printm(inner)
+    result = sum_col(inner)[0][0] / (2*len(y))
+    return result
+def mae_loss(X,y,theta):
+    """
+    mean absolute error
+    L = |y - f(x)|
+    """
+    pass
+
+
+#---different ways of gradient descent---
+def bgd(X,y,theta,alpha = 0.0001,iters=10000):
+    """
+    Batch gradient descent
+    returns theta in col vector format
+    """
+    cost = []
+    if(len(theta) == 1):
+        theta = transpose(theta)
+    for i in range(iters):
+        
+        theta = add(theta,times_const(alpha,mul(transpose(X),sub(y,hypotheses(X,theta)))))
+        loss = mse_loss(X,y,theta)
+        cost.append(loss)
+        print(theta,loss)
+        if max(theta) > [1e100]:
+            raise ValueError("Overshooting! Decrease alpha to avoid it.")
+    return theta,cost
+
+
+def sgd():
+    """
+    Stochastic gradient descent
+    """
+    pass
+def mbgd():
+    """
+    Mini-Batch Gradient Descent
+    """
+    pass
+
+if __name__ == "__main__":  
+
+    #---week 1 Andrew Ng---
+    '''   
+    dat = readmat("ex1data1.txt")
+    X,y = split_col(dat)
+    bias = ones(len(X),1)
+    x = X
+    X = comb_col(bias,X)
+    theta = [[-3],[1]]
+    #print(mse_loss(X,y,theta))
+    #print(hypotheses(X,theta))
+    theta,cost = bgd(X,y,theta,alpha = 0.0001,iters = 800)
+    scatter(x,y,hold = True)
+    plot_func(lambda x: theta[0][0]+theta[1][0]*x,min(x)[0],max(x)[0],hold = True)
+    plt.show()
+    plot([i for i in range(800)],cost)
+    '''
+
