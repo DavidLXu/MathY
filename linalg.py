@@ -108,7 +108,30 @@ def print_vector_group(vec_tuple,precision=4):
 def printm(A,precision = 2):
     print_matrix(A,precision)
 def printv(A):
-    print_vector(A)       
+    print_vector(A)   
+
+# every vector in MathY is represented as a 2d matrix
+def list2vec(l,vectype = "col"):
+    if vectype == "row":
+        return [l]
+    else:
+        return [[i] for i in l]
+def vec2list(vec):
+    if len(vec) == 1:
+        return vec[0]
+    else:
+        l = []
+        for item in vec:
+            l.append(item[0])
+        return l
+def mat2list(dat):
+    l = []
+    for i in range(len(dat)):
+        for j in range(len(dat[0])):
+            l.append(dat[i][j])
+            print(l)
+    return l
+        
 # return shape of 2d mat, 3d or more not supported
 def shape(A):
     return len(A),len(A[0])
@@ -980,7 +1003,7 @@ def eigen_vector(A):
     for i in range(len(val)):
         S = matrix_add(A,times_const(-val[i],E))
         ##############这里回代矩阵已经有了，就差一个返回解向量的函数
-        print(S)
+        printm(S)
 
 def mat2list(mat):
     """

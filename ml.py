@@ -27,7 +27,7 @@ def mae_loss(X,y,theta):
 
 
 #---different ways of gradient descent---
-def bgd(X,y,theta,alpha = 0.0001,iters=10000):
+def bgd(X,y,theta,alpha = 0.0001,iters=100):
     """
     Batch gradient descent
     returns theta in col vector format
@@ -46,33 +46,31 @@ def bgd(X,y,theta,alpha = 0.0001,iters=10000):
     return theta,cost
 
 
-def sgd():
+def sgd(X,y,theta,alpha = 0.001,iters=100):
     """
     Stochastic gradient descent
     """
-    pass
+    cost = []
+    if(len(theta) == 1):
+        theta = transpose(theta)
+    for k in range(iters):
+        for i in range(len(y)):
+            for j in range(len(theta)):
+
+                theta[j][0] = theta[j][0]+alpha*(y[i][0]-hypotheses([X[i]],theta)[0][0])*X[i][j]
+        loss = mse_loss(X,y,theta)
+        cost.append(loss)
+        print(theta,loss)
+        if max(theta) > [1e100]:
+            raise ValueError("Overshooting! Decrease alpha to avoid it.")
+    return theta,cost
+
 def mbgd():
     """
     Mini-Batch Gradient Descent
     """
     pass
-
-if __name__ == "__main__":  
-
-    #---week 1 Andrew Ng---
-    '''   
-    dat = readmat("ex1data1.txt")
-    X,y = split_col(dat)
-    bias = ones(len(X),1)
-    x = X
-    X = comb_col(bias,X)
-    theta = [[-3],[1]]
-    #print(mse_loss(X,y,theta))
-    #print(hypotheses(X,theta))
-    theta,cost = bgd(X,y,theta,alpha = 0.0001,iters = 800)
-    scatter(x,y,hold = True)
-    plot_func(lambda x: theta[0][0]+theta[1][0]*x,min(x)[0],max(x)[0],hold = True)
-    plt.show()
-    plot([i for i in range(800)],cost)
-    '''
-
+def unitize(dat):
+    for vec
+if __name__ == "__main__":
+    pass
