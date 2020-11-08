@@ -1,5 +1,5 @@
 from imports import *
-
+import random
 def hypotheses(X,theta):
     if(len(theta) == 1):
         theta = transpose(theta)
@@ -71,6 +71,44 @@ def mbgd():
     """
     pass
 def unitize(dat):
-    for vec
-if __name__ == "__main__":
+    #for vec
     pass
+
+def k_means(k,x_data,y_data):
+    #print("x_data:",x_data)
+    #print("y_data:",y_data)
+
+    # 随机生成k个means
+    centriod_x = [random.uniform(min(x_data),max(x_data)) for i in range(k)]
+    centroid_y = [random.uniform(min(y_data),max(y_data)) for i in range(k)]
+    #print("x_centroid:",centriod_x)
+    #print("y_centroid:",centroid_y)
+    plt.scatter(centriod_x,centroid_y,color='red')
+    # 存放最近的点的标号
+    
+    plt.show()
+
+    index_coordinate = []
+    # 对每一对坐标点
+    for i,j in zip(x_data,y_data):
+        dist = []
+        # 找距离最近的mean值
+        for n,m in zip(centriod_x,centroid_y):
+            dist.append(sqrt((i-n)**2+(j-m)**2))
+        # 记录最近的点是哪一个mean值
+        index_coordinate.append([dist.index(min(dist)),i,j])
+    a = np.array(index_coordinate)
+    
+    a = a[np.argsort(a[:,0])]
+    print("closest indices | x | y")
+    print(a)
+    
+    print("how to divide this into 3 pieces? according to the first column") #怎么才能按照第一列分三份？")
+
+if __name__ == "__main__":
+
+    # 随机生成三个聚堆的数据
+    x = [random.gauss(0,1) for i in range(6)] + [random.gauss(9,1) for i in range(6)] + [random.gauss(5,1) for i in range(6)]
+    y = [random.gauss(0,1) for i in range(6)] + [random.gauss(5,1) for i in range(6)] + [random.gauss(9,1) for i in range(6)]
+    plt.scatter(x,y)
+    k_means(3,x,y)

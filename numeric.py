@@ -616,12 +616,26 @@ if __name__ == '__main__':
     A = [[10,-1,4],[-1,7,3],[2,-5,a]]
     b = [[1],[0],[-1]]
     D,L,U = dlu_decompose(A)
-    #jacobi_iteration(A,b)
+    # 计算方法第九章作业第一题 欧拉方法解一阶微分方程
+    
+    f = lambda x,y: y+sin(x)
+    y0 = 1
+    a = 0
+    b = 1
+    h = 0.1
+    
+    # 第二题 龙格库塔方法
+    x,y = runge_kutta(order = 2)
+    x1,y1 = runge_kutta(order = 4)
 
-    B1 = multiply(inv(D), add_mat(L, U))
-    print(B1)
-    B1 = [[0, 1/10, -2/5], 
-        [1/7, 0, -3/7], 
-        [-2/a, 5/a, 0]]
-    s_radius = spectral_radius(B1)
+    print("---二阶Runge-Kutta---")
+    for i in range(len(x)):
+        print("x: %.1f,  y: %f"%(x[i],y[i]))
+    print("---四阶Runge-Kutta---")  
+    for i in range(len(x1)):
+        print("x: %.1f,  y: %f"%(x1[i],y1[i]))
+    euler_plot = plt.plot(x,y)
+    euler_improved_plot = plt.plot(x1,y1)
+    legend = plt.legend(["Runge-Kutta-2","Runge-Kutta-4"],loc='upper left')
+    plt.show()
     

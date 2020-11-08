@@ -1,6 +1,32 @@
 from basic import *
-
+import random # used by monte carlo method
 def lim(f,x):
+    pass
+def calc_pi(n = 500000):
+    # Classic Monte Carlo method, but very slow
+    r = 1.0
+    a,b = 0,0
+    x_neg,x_pos = a-r,a+r
+    y_neg,y_pos = b-r,b+r
+    count = 0
+    for i in range(n):
+        x = random.uniform(x_neg,x_pos)
+        y = random.uniform(y_neg,y_pos)
+        if x**2 + y**2 <= 1.0:
+            count += 1
+    return (count/n)*4
+
+####
+# Several ways to find min or max of a function:
+# 1. 遗传算法
+# 2. 粒子群算法
+# 3. 模拟退火
+# 4. 蚁群算法
+####
+def find_min():
+
+    pass
+def find_max():
     pass
 
 def derivative(f,a,method='central',h=0.00001):
@@ -159,6 +185,10 @@ def integrate_gauss(function,start,end,n=3):
     summation*=(end-start)/2
     return summation
 
+
+def integrate_monte_carlo(f,xmin,xmax,n=1000):
+    # 还需要ymin和ymax才能计算
+    pass
 def integrate(function,start,end,n=3):
     # use gauss integration as backend
     return integrate_gauss(function,start,end,n)
