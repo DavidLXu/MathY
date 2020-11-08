@@ -33,7 +33,8 @@ if __name__ == '__main__':
     A = mat("1 2 3 ;4 5 5 ;3 2 1")
     eigen_vector(A)
     #print(mat2list(A))
-
+    # see if it gets pushed
+    123
 
 
 
