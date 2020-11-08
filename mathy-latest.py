@@ -34,7 +34,7 @@ if __name__ == '__main__':
     eigen_vector(A)
     #print(mat2list(A))
     # see if it gets pushed
-    123
+    
 
 
 
