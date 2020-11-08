@@ -3,8 +3,6 @@ import random
 from numpy import *
 from functools import reduce
 from imports import *
-
-random.seed(123)
 def sigmoid(inX):
     return 1.0 / (1 + exp(-inX))
 
@@ -155,20 +153,15 @@ class Network(object):
                 conn.downstream_node.append_upstream_connection(conn)
                 conn.upstream_node.append_downstream_connection(conn)
 
-    def loss(self,label,predict):
-        return 0.5*np.sum((np.array(label)-np.array(predict))**2)
+    #def loss(self):
+
 
     def train(self, labels, data_set, rate, epoch):
         for i in range(epoch):
             print('epoch %d ...' % i)
             for d in range(len(data_set)):
                 self.train_one_sample(labels[d], data_set[d], rate)
-                
-                loss = self.loss(labels[d], self.predict(data_set[d]))
-                print('epoch %d of %d, sample %d of %d, loss %f' % (i, epoch, d,len(data_set), loss))
-                #print('epoch %d of %d, sample %d of %d' % (i, epoch, d,len(data_set))) # 不打印loss
-            #accuracy = evaluate(self,data_set,labels)
-            #print("accuracy:",accuracy)
+                print('sample %d of %d training finished' % (d,len(data_set)))
 
     def train_one_sample(self, label, sample, rate):
         self.predict(sample)
@@ -223,14 +216,15 @@ def get_result(vec):
 def evaluate(network, test_data_set, test_labels):
     error = 0
     total = len(test_data_set)
-    #print(test_labels)
+    print(test_labels)
     for i in range(total):
-        label = get_result(test_labels[i])
-        predict = get_result(network.predict(test_data_set[i]))
-        print("label %d, predict %d"%(label,predict))
+        label = test_labels[i]#get_result(test_labels[i])
+        predict = round(network.predict(test_data_set[i])[0])#get_result(network.predict(test_data_set[i]))
+        print("label:",label)
+        print("predict:",predict)
         if label != predict:
             error += 1
-    return 1-((error) / (total))
+    return (error) / (total)
 
 
 if __name__ == '__main__':
@@ -263,7 +257,7 @@ if __name__ == '__main__':
     # 案例二 mnist
     '''
     超参数的确定-经验公式
-    m = sqrt(n+l) + alpha
+    m = sqrt() + alpha
     m = log(2,n)
     m = sqrt(n*l)
     where:
@@ -272,7 +266,7 @@ if __name__ == '__main__':
         l : 输出层节点数
         alpha: 1~10 之间的常数
     '''
-    net = Network([784, 16, 10])
+    net = Network([784, 64, 10])
 
     from keras.utils import np_utils
     from keras.datasets import mnist
@@ -294,19 +288,12 @@ if __name__ == '__main__':
     Y_test = np_utils.to_categorical(y_test,10)
 
 
-    # net.train(labels=Y_train[:400],data_set=X_train[:400],rate=0.7,epoch=4) 准确率达91%, net = Network([784, 16, 10])
-    net.train(labels=Y_train[:400],data_set=X_train[:400],rate=0.7,epoch=4)
-    print("accuracy:",evaluate(network=net, test_data_set=X_train[100:200], test_labels=Y_train[100:200]))
 
-    '''
-    for index in range(10,15):
-        
-        print(Y_train[index])
-        y = net.predict(X_train[index])
-        print(y)
-        #plt.imshow(X_test[index].reshape([28,28]))
-        #plt.show()
-    '''
+    net.train(labels=Y_train[:1000],data_set=X_train[:1000],rate=0.5,epoch=1)
+    #print(evaluate(network=net, test_data_set=x_data, test_labels=y_label))
+    print(Y_test[1])
+    y = net.predict(X_test[1])
+    print(y)
     #net.dump()
 
 

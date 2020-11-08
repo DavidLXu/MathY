@@ -312,3 +312,5 @@ def linspace(start_val,end_val,steps = 50,ending = "not included"):
 def mapping(function,x_list):
     y_list = [function(x_list[i]) for i in range(len(x_list))]
     return y_list
+if __name__ == "__main__":
+    print(log(2,7840))
