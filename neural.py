@@ -3,6 +3,8 @@ import random
 from numpy import *
 from functools import reduce
 from imports import *
+import pickle # save and read trained network
+import time
 
 random.seed(123)
 def sigmoid(inX):
@@ -159,16 +161,25 @@ class Network(object):
         return 0.5*np.sum((np.array(label)-np.array(predict))**2)
 
     def train(self, labels, data_set, rate, epoch):
+        start_time = time.time()
         for i in range(epoch):
             print('epoch %d ...' % i)
             for d in range(len(data_set)):
                 self.train_one_sample(labels[d], data_set[d], rate)
-                
                 loss = self.loss(labels[d], self.predict(data_set[d]))
-                print('epoch %d of %d, sample %d of %d, loss %f' % (i, epoch, d,len(data_set), loss))
-                #print('epoch %d of %d, sample %d of %d' % (i, epoch, d,len(data_set))) # 不打印loss
+
+                now_time = time.time()
+                m, s = divmod(now_time-start_time, 60)
+                h, m = divmod(m, 60)
+                print('epoch %d of %d, sample %d of %d, loss %f, time used %02d:%02d:%02d' % (i, epoch, d,len(data_set), loss, h,m,s)) # show time & loss
+                #print('epoch %d of %d, sample %d of %d, loss %f' % (i, epoch, d,len(data_set), loss)) # do not show time (costs more 5s every min)
+                #print('epoch %d of %d, sample %d of %d' % (i, epoch, d,len(data_set))) # 不打印loss(因为是每个sample的loss，不稳定)
             #accuracy = evaluate(self,data_set,labels)
             #print("accuracy:",accuracy)
+        end_time = time.time()
+        m, s = divmod(end_time-start_time, 60)
+        h, m = divmod(m, 60)
+        print("Training time used %02d:%02d:%02d" % (h, m, s))
 
     def train_one_sample(self, label, sample, rate):
         self.predict(sample)
@@ -219,7 +230,7 @@ def get_result(vec):
             max_value = vec[i]
             max_value_index = i
     return max_value_index
-
+# one-hot
 def evaluate(network, test_data_set, test_labels):
     error = 0
     total = len(test_data_set)
@@ -232,33 +243,42 @@ def evaluate(network, test_data_set, test_labels):
             error += 1
     return 1-((error) / (total))
 
+def save_modal(network,path):
+    with open(path,'wb') as pkl_file:
+        pickle.dump(network,pkl_file)
+        print("Network modal saved successfully as", pkl_file.name)
+    
+def load_modal(path):
+    with open(path,'rb') as pkl_file:
+        print("Network modal loaded from",pkl_file.name)
+        return pickle.load(pkl_file)
 
 if __name__ == '__main__':
     '''
     # 案例一 使用diy的神经网络预测性别，根据身高和体重
 
-    # 两输入 一输出
-    net = Network([2, 2, 1])
+    # 前身高后体重
+    x_data=[[180,65],[185,72],[175,70],[160,60],[165,56],[158,53]]
 
     # 1男0女
     y_label=[[1],[1],[1],[0],[0],[0]]
 
-    # 前身高后体重
-    x_data=[[180,65],[185,72],[175,70],[160,60],[165,56],[158,53]]
-
     # 做一下处理
-    x_data=np.array(x_data)/200
+    x_data=np.array(x_data)/200 
 
+    # 两输入 一输出
+    #net_gender = Network([2, 2, 1])
+    #net_gender.train(labels=y_label,data_set=x_data,rate=0.5,epoch=5000)
+    #save_modal(net_gender,'D:/net')
 
-    test_height=160/200
-    test_weight=55/200
+    net_gender = load_modal('D:/net')
 
-    net.train(labels=y_label,data_set=x_data,rate=0.5,epoch=5000)
-    print(evaluate(network=net, test_data_set=x_data, test_labels=y_label))
-    y = net.predict([test_height,test_weight])
+    test_height=185/200
+    test_weight=70/200
+    y = net_gender.predict([test_height,test_weight])
     print(y)
-    #net.dump()
     '''
+    
 
     # 案例二 mnist
     '''
@@ -272,16 +292,15 @@ if __name__ == '__main__':
         l : 输出层节点数
         alpha: 1~10 之间的常数
     '''
-    net = Network([784, 16, 10])
-
+    
+    '''
+    # 生成mnist数据，因为已经保存好了，就直接用numpy读取
     from keras.utils import np_utils
     from keras.datasets import mnist
-
     import matplotlib.pyplot as plt
 
     (X_train,y_train),(X_test,y_test)=mnist.load_data()
 
-    print("3. Procesing data...")
     X_train = X_train[:].reshape((-1,784))
     X_test = X_test.reshape((-1,784))
     X_train = X_train.astype("float32")
@@ -292,22 +311,24 @@ if __name__ == '__main__':
 
     Y_train = np_utils.to_categorical(y_train[:],10)
     Y_test = np_utils.to_categorical(y_test,10)
-
-
+    
+    np.save("X_train",X_train)
+    np.save("X_test",X_test)
+    np.save("Y_train",Y_train)
+    np.save("Y_test",Y_test)
+    '''
+    X_train = np.load("X_train.npy")
+    X_test = np.load("X_test.npy")
+    Y_train = np.load("Y_train.npy")
+    Y_test = np.load("Y_test.npy")
+    net = Network([784, 16, 10])
     # net.train(labels=Y_train[:400],data_set=X_train[:400],rate=0.7,epoch=4) 准确率达91%, net = Network([784, 16, 10])
-    net.train(labels=Y_train[:400],data_set=X_train[:400],rate=0.7,epoch=4)
-    print("accuracy:",evaluate(network=net, test_data_set=X_train[100:200], test_labels=Y_train[100:200]))
-
-    '''
-    for index in range(10,15):
-        
-        print(Y_train[index])
-        y = net.predict(X_train[index])
-        print(y)
-        #plt.imshow(X_test[index].reshape([28,28]))
-        #plt.show()
-    '''
+    net.train(labels=Y_train[:1000],data_set=X_train[:1000],rate=1.4,epoch=2)
+    save_modal(net,'net_mnist_all.pkl')
+    #net = load_modal('net_mnist.pkl')
+    print("accuracy:",evaluate(network=net, test_data_set=X_train[:1000], test_labels=Y_train[:1000]))
+ 
     #net.dump()
-
+    
 
     
