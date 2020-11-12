@@ -1,3 +1,7 @@
+# 面向对象版本的神经网络，通过搭建神经元而成
+# 数据格式要求：
+# input_data: 二维数组，每一个sample都是一维数组
+# input_label: 二维数组，每一个label都是一维数组
 
 import random
 from numpy import *
@@ -163,7 +167,8 @@ class Network(object):
     def train(self, labels, data_set, rate, epoch):
         start_time = time.time()
         for i in range(epoch):
-            print('epoch %d ...' % i)
+            if i % 100 == 0:
+                print('epoch %d ...' % i)
             for d in range(len(data_set)):
                 self.train_one_sample(labels[d], data_set[d], rate)
                 loss = self.loss(labels[d], self.predict(data_set[d]))
@@ -171,9 +176,10 @@ class Network(object):
                 now_time = time.time()
                 m, s = divmod(now_time-start_time, 60)
                 h, m = divmod(m, 60)
-                print('epoch %d of %d, sample %d of %d, loss %f, time used %02d:%02d:%02d' % (i, epoch, d,len(data_set), loss, h,m,s)) # show time & loss
-                #print('epoch %d of %d, sample %d of %d, loss %f' % (i, epoch, d,len(data_set), loss)) # do not show time (costs more 5s every min)
-                #print('epoch %d of %d, sample %d of %d' % (i, epoch, d,len(data_set))) # 不打印loss(因为是每个sample的loss，不稳定)
+
+
+                #print('epoch %d of %d, sample %d of %d, loss %f, time used %02d:%02d:%02d' % (i, epoch, d,len(data_set), loss, h,m,s)) # show time & loss
+              
             #accuracy = evaluate(self,data_set,labels)
             #print("accuracy:",accuracy)
         end_time = time.time()
@@ -279,7 +285,7 @@ if __name__ == '__main__':
     print(y)
     '''
     
-
+    """
     # 案例二 mnist
     '''
     超参数的确定-经验公式
@@ -321,14 +327,31 @@ if __name__ == '__main__':
     X_test = np.load("X_test.npy")
     Y_train = np.load("Y_train.npy")
     Y_test = np.load("Y_test.npy")
-    net = Network([784, 16, 10])
+    #net = Network([784, 16, 10])
     # net.train(labels=Y_train[:400],data_set=X_train[:400],rate=0.7,epoch=4) 准确率达91%, net = Network([784, 16, 10])
-    net.train(labels=Y_train[:1000],data_set=X_train[:1000],rate=1.4,epoch=2)
-    save_modal(net,'net_mnist_all.pkl')
-    #net = load_modal('net_mnist.pkl')
-    print("accuracy:",evaluate(network=net, test_data_set=X_train[:1000], test_labels=Y_train[:1000]))
- 
-    #net.dump()
+    #net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=1.4,epoch=2)
+    #save_modal(net,'net_mnist.pkl')
+    net = load_modal('net_mnist_all.pkl')
+    #print("accuracy:",evaluate(network=net, test_data_set=X_test[:1000], test_labels=Y_test[:1000]))
+    plt.imshow(X_test[999].reshape((28,28)))
+    plt.show()
+    """
+
+    # 案例三 做一个加法器
+    x_data=[[0,0,0],[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+
+    # 1男0女
+    y_label=[[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0],[1,1,1],[0,0,0]]
+
+    net_add = Network([3, 3, 3])
+    net_add.train(labels=y_label,data_set=x_data,rate=0.5,epoch=6000)
+    #save_modal(net_gender,'D:/net')
+
+    #net_gender = load_modal('D:/net')
+
+
+    y = net_add.predict([0,0,1])
+    print(y)
     
 
     
