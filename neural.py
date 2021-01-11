@@ -4,7 +4,8 @@
 # input_label: 二维数组，每一个label都是一维数组
 
 import random
-from numpy import *
+#from numpy import *
+import numpy as np
 from functools import reduce
 from imports import *
 import pickle # save and read trained network
@@ -177,8 +178,7 @@ class Network(object):
                 m, s = divmod(now_time-start_time, 60)
                 h, m = divmod(m, 60)
 
-
-                #print('epoch %d of %d, sample %d of %d, loss %f, time used %02d:%02d:%02d' % (i, epoch, d,len(data_set), loss, h,m,s)) # show time & loss
+                print('epoch %d of %d, sample %d of %d, loss %f, time used %02d:%02d:%02d' % (i, epoch, d,len(data_set), loss, h,m,s)) # show time & loss
               
             #accuracy = evaluate(self,data_set,labels)
             #print("accuracy:",accuracy)
@@ -260,33 +260,35 @@ def load_modal(path):
         return pickle.load(pkl_file)
 
 if __name__ == '__main__':
-    '''
+    """
     # 案例一 使用diy的神经网络预测性别，根据身高和体重
 
-    # 前身高后体重
+    # 训练集data: 前身高后体重
     x_data=[[180,65],[185,72],[175,70],[160,60],[165,56],[158,53]]
 
-    # 1男0女
+    # 训练集label: 1男0女
     y_label=[[1],[1],[1],[0],[0],[0]]
 
     # 做一下处理
     x_data=np.array(x_data)/200 
 
     # 两输入 一输出
-    #net_gender = Network([2, 2, 1])
-    #net_gender.train(labels=y_label,data_set=x_data,rate=0.5,epoch=5000)
+    net_gender = Network([2, 2, 1])
+    net_gender.train(labels=y_label,data_set=x_data,rate=0.5,epoch=2000) # 如果嫌慢，把180行注释掉
     #save_modal(net_gender,'D:/net')
 
-    net_gender = load_modal('D:/net')
+    #net_gender = load_modal('D:/net')
 
-    test_height=185/200
-    test_weight=70/200
+    # 测试集: 要输入的身高体重
+    test_height=185
+    test_weight=70
+
+    test_height/=200
+    test_weight/=200
     y = net_gender.predict([test_height,test_weight])
-    print(y)
-    '''
-    
+    print("男生概率:",y)
     """
-    # 案例二 mnist
+    
     '''
     超参数的确定-经验公式
     m = sqrt(n+l) + alpha
@@ -298,6 +300,8 @@ if __name__ == '__main__':
         l : 输出层节点数
         alpha: 1~10 之间的常数
     '''
+    # 案例二 mnist
+
     
     '''
     # 生成mnist数据，因为已经保存好了，就直接用numpy读取
@@ -327,16 +331,19 @@ if __name__ == '__main__':
     X_test = np.load("X_test.npy")
     Y_train = np.load("Y_train.npy")
     Y_test = np.load("Y_test.npy")
-    #net = Network([784, 16, 10])
-    # net.train(labels=Y_train[:400],data_set=X_train[:400],rate=0.7,epoch=4) 准确率达91%, net = Network([784, 16, 10])
+    net = Network([784, 16, 10])
+    net.train(labels=Y_train[:400],data_set=X_train[:400],rate=0.7,epoch=4) #准确率达91%, net = Network([784, 16, 10])
     #net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=1.4,epoch=2)
     #save_modal(net,'net_mnist.pkl')
-    net = load_modal('net_mnist_all.pkl')
-    #print("accuracy:",evaluate(network=net, test_data_set=X_test[:1000], test_labels=Y_test[:1000]))
-    plt.imshow(X_test[999].reshape((28,28)))
-    plt.show()
-    """
+    #net = load_modal('net_mnist_all.pkl')
+    print("accuracy:",evaluate(network=net, test_data_set=X_test[:1000], test_labels=Y_test[:1000]))
+    #plt.imshow(X_test[999].reshape((28,28)))
+    #plt.show()
+    
 
+
+
+    """
     # 案例三 做一个加法器
     x_data=[[0,0,0],[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0],[1,1,1]]
 
@@ -352,6 +359,30 @@ if __name__ == '__main__':
 
     y = net_add.predict([0,0,1])
     print(y)
-    
+    """
 
-    
+    # 案例四 与或门
+    '''
+    and_data=[[0,0],[0,1],[1,0],[1,1]]
+    and_label=[[0],[0],[0],[1]]
+
+    or_data=[[0,0],[0,1],[1,0],[1,1]]
+    or_label=[[0],[1],[1],[1]]
+
+    net_and = Network([2, 1])
+    net_and.train(labels=and_label,data_set=and_data,rate=0.5,epoch=3000)
+    net_or = Network([2, 1])
+    net_or.train(labels=or_label,data_set=or_data,rate=0.5,epoch=3000)
+
+    print(net_and.predict([0,1]))
+
+    print(net_or.predict([0,1]))
+    '''
+    """
+    and_data=[[0,0,0],[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+    and_label=[[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0],[1,1,1],[0,0,0],[0,0,1]]
+    net_and = Network([3, 30, 3])
+    net_and.train(labels=and_label,data_set=and_data,rate=0.5,epoch=3000)
+
+    print(net_and.predict([0,0,0]))
+    """

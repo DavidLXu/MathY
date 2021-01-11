@@ -1,6 +1,10 @@
 import random
 from numpy import *
 from functools import reduce
+
+import sys
+sys.path.append('../') # 在当前目录下才可以运行
+
 from imports import *
 import pickle # save and read trained network
 import time
@@ -182,12 +186,6 @@ class Network(object):
 
 
 
-
-
-
-
-
-
 # one-hot -> integer
 def get_result(vec):
     max_value_index = 0
@@ -223,87 +221,155 @@ def load_modal(path):
         print("Network modal loaded from",pkl_file.name)
         return pickle.load(pkl_file)
 
-if __name__ == '__main__':
-    '''
-    # 案例一 使用diy的神经网络预测性别，根据身高和体重
+def get_one_hot(targets, nb_classes):
+    res = np.eye(nb_classes)[np.array(targets).reshape(-1)]
+    return res.reshape(list(targets.shape)+[nb_classes])
 
-    # 前身高后体重
-    x_data=[[180,65],[185,72],[175,70],[160,60],[165,56],[158,53]]
 
-    # 1男0女
-    y_label=[[1],[1],[1],[0],[0],[0]]
 
-    # 做一下处理
-    x_data=np.array(x_data)/200 
+###########################
+### 一些案例，写在函数里 ###
+###########################
 
-    # 两输入 一输出
-    #net_gender = Network([2, 2, 1])
-    #net_gender.train(labels=y_label,data_set=x_data,rate=0.5,epoch=5000)
-    #save_modal(net_gender,'D:/net')
 
-    net_gender = load_modal('D:/net')
-
-    test_height=185/200
-    test_weight=70/200
-    y = net_gender.predict([test_height,test_weight])
-    print(y)
-    '''
-    
-
-    # 案例二 mnist
-    '''
-    超参数的确定-经验公式
-    m = sqrt(n+l) + alpha
-    m = log(2,n)
-    m = sqrt(n*l)
-    where:
-        m : 隐藏层节点数
-        n : 输入层节点数
-        l : 输出层节点数
-        alpha: 1~10 之间的常数
-    '''
-    
-    '''
-    # 生成mnist数据，因为已经保存好了，就直接用numpy读取
-    from keras.utils import np_utils
-    from keras.datasets import mnist
-    import matplotlib.pyplot as plt
-
-    (X_train,y_train),(X_test,y_test)=mnist.load_data()
-
-    X_train = X_train[:].reshape((-1,784))
-    X_test = X_test.reshape((-1,784))
-    X_train = X_train.astype("float32")
-    X_test = X_test.astype("float32")
-
-    X_train /= 255
-    X_test /= 255
-
-    Y_train = np_utils.to_categorical(y_train[:],10)
-    Y_test = np_utils.to_categorical(y_test,10)
-    
-    np.save("X_train",X_train)
-    np.save("X_test",X_test)
-    np.save("Y_train",Y_train)
-    np.save("Y_test",Y_test)
-    '''
+# 案例二 
+def mnist():
     X_train = np.load("X_train.npy")
     X_test = np.load("X_test.npy")
     Y_train = np.load("Y_train.npy")
     Y_test = np.load("Y_test.npy")
-    net = Network([784, 128,64, 10])
-    
 
     # 导入的数据是 (60000,784,) (60000,10,) 需要处理一下维度 -> (60000,784,1) (60000,10,1)
-    X_train=X_train.reshape((X_train.shape[0],X_train.shape[1],-1))
+    X_train=X_train.reshape((X_train.shape[0],784,-1))
     Y_train=Y_train.reshape((Y_train.shape[0],Y_train.shape[1],-1))
     # 导入的数据是 (10000,784,) (10000,10,) 需要处理一下维度 -> (10000,784,1) (10000,10,1)
-    X_test=X_test.reshape((X_test.shape[0],X_test.shape[1],-1))
+    X_test=X_test.reshape((X_test.shape[0],784,-1))
     Y_test=Y_test.reshape((Y_test.shape[0],Y_test.shape[1],-1))
 
-    net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=10)
-    #net.train(labels=Y_train[:10000],data_set=X_train[:10000],rate=0.7,epoch=5, verbose=1, freq = 1000)
-    save_modal(net,'net_mnist_matrix_20201112_60000x10_784_128_64_10_rate0.7.pkl')
-    #net = load_modal('net_mnist_matrix_20201112_60000x10_rate0.7_epoch10_acc0.9748.pkl')
+    net = Network([784, 16, 10])
+    #net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=4,verbose=1,freq=1000) #准确率达91%, net = Network([784, 16, 10])
+    net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=2)
+    #save_modal(net,'net_mnist.pkl')
+    #net = load_modal('net_mnist_all.pkl')
     print("accuracy:",evaluate(network=net, test_data_set=X_test[:10000], test_labels=Y_test[:10000]))
+    #plt.imshow(X_test[999].reshape((28,28)))
+    #plt.show()
+    for i in range(1000,1005):
+        print("label:",get_result(Y_test[i]),"predict:",get_result(net.predict(X_test[i])))
+        plt.imshow(X_test[i].reshape((28,28)))
+        plt.show()
 
+# 案例三 fashion mnist 
+def fashion_mnist():  
+    '''
+    ## 读取原始 fashion mnist 的代码 后续保存成numpy格式方便使用
+    import gzip    
+    def read_data():
+        files = [
+        'train-labels-idx1-ubyte.gz', 'train-images-idx3-ubyte.gz',
+        't10k-labels-idx1-ubyte.gz', 't10k-images-idx3-ubyte.gz'
+        ]
+        # 我在当前的目录下创建文件夹，里面放入上面的四个压缩文件
+        current = './fashion_mnist_data'
+        paths = []
+        for i in range(len(files)):
+            paths.append('./fashion_mnist_data/'+ files[i])
+        
+        with gzip.open(paths[0], 'rb') as lbpath:
+            y_train = np.frombuffer(lbpath.read(), np.uint8, offset=8)
+    
+        with gzip.open(paths[1], 'rb') as imgpath:
+            x_train = np.frombuffer(
+                imgpath.read(), np.uint8, offset=16).reshape(len(y_train), 28, 28)
+    
+        with gzip.open(paths[2], 'rb') as lbpath:
+            y_test = np.frombuffer(lbpath.read(), np.uint8, offset=8)
+    
+        with gzip.open(paths[3], 'rb') as imgpath:
+            x_test = np.frombuffer(
+                imgpath.read(), np.uint8, offset=16).reshape(len(y_test), 28, 28)
+            
+        return (x_train, y_train), (x_test, y_test)
+    
+    (train_images, train_labels), (test_images, test_labels) = read_data()
+
+    train_labels = get_one_hot(train_labels,10)
+    test_labels = get_one_hot(test_labels,10)
+    
+    np.save("train_images",train_images)
+    np.save("train_labels",train_labels)
+    np.save("test_images",test_images)
+    np.save("test_labels",test_labels)
+    '''
+    
+    train_images = np.load("train_images.npy")
+    train_labels = np.load("train_labels.npy")
+    test_images = np.load("test_images.npy")
+    test_labels = np.load("test_labels.npy")
+
+    
+    train_images = train_images/255.0
+    test_images = test_images/255.0
+ 
+    # 导入的数据是 (60000,784,) (60000,10,) 需要处理一下维度 -> (60000,784,1) (60000,10,1)
+    train_images=train_images.reshape((train_images.shape[0],784,-1))
+    train_labels=train_labels.reshape((train_labels.shape[0],train_labels.shape[1],-1))
+    # 导入的数据是 (10000,784,) (10000,10,) 需要处理一下维度 -> (10000,784,1) (10000,10,1)
+    test_images=test_images.reshape((test_images.shape[0],784,-1))
+    test_labels=test_labels.reshape((test_labels.shape[0],test_labels.shape[1],-1))
+
+
+    net = Network([784, 10, 10])
+    net.train(labels=train_labels[:60000],data_set=train_images[:60000],rate=0.5,epoch=3,verbose=1,freq=500)
+    #net.train(labels=Y_train[:10000],data_set=X_train[:10000],rate=0.7,epoch=5, verbose=1, freq = 1000)
+    #save_modal(net,'net_fashion_matrix_20201112_60000x10_784_128_128_10_rate0.5.pkl')
+    #net = load_modal('net_mnist_matrix_20201112_60000x100_784_128_10_rate0.7acc0.9788.pkl')
+
+    fashion_list = {0:	"T-shirt/top T恤",
+                    1:	"Trouser 裤子",
+                    2:	"Pullover 套衫",
+                    3:	"Dress 裙子",
+                    4:	"Coat 外套",
+                    5:	"Sandal 凉鞋",
+                    6:	"Shirt 汗衫", 
+                    7:	"Sneaker 运动鞋",
+                    8:	"Bag 包",
+                    9:	"Ankle boot 踝靴"}
+    for i in range(1000,1005):
+        print("label:",fashion_list[get_result(test_labels[i])],"predict:",fashion_list[get_result(net.predict(test_images[i]))])
+        plt.imshow(test_images[i].reshape((28,28)))
+        plt.show()
+
+    print("accuracy:",evaluate(network=net, test_data_set=test_images[:10000], test_labels=test_labels[:10000]))
+
+# 案例四 与或门
+def gate():
+
+    and_data = np.array([[[0],[0]],[[0],[1]],[[1],[0]],[[1],[1]]])
+    and_label = np.array([[[0]],[[0]],[[0]],[[1]]])
+
+    #or_data=[[0,0],[0,1],[1,0],[1,1]]
+    #or_label=[[0],[1],[1],[1]]
+
+    net_and = Network([2, 1])
+    net_and.train(labels=and_label,data_set=and_data,rate=0.5,epoch=3000)
+    #net_or = Network([2, 1])
+    #net_or.train(labels=or_label,data_set=or_data,rate=0.5,epoch=3000)
+
+    print(net_and.predict([0,1]))
+
+    #print(net_or.predict([0,1]))
+
+if __name__ == '__main__':
+    '''
+    
+    net.train 在接受数据的时候，维度为三维数组，转换成numpy格式，例如：
+    and_data = np.array([[[0],[0]],[[0],[1]],[[1],[0]],[[1],[1]]])
+    and_label = np.array([[[0]],[[0]],[[0]],[[1]]])
+    '''
+
+    #fashion_mnist()
+    #gate()
+    mnist()
+    
+    
