@@ -232,7 +232,31 @@ def get_one_hot(targets, nb_classes):
 ### 一些案例，写在函数里 ###
 ###########################
 
+'''
+# 生成mnist数据，因为已经保存好了，就直接用numpy读取
+# 保存成npy文件的时候，已经归一化了
+from keras.utils import np_utils
+from keras.datasets import mnist
+import matplotlib.pyplot as plt
 
+(X_train,y_train),(X_test,y_test)=mnist.load_data()
+
+X_train = X_train[:].reshape((-1,784))
+X_test = X_test.reshape((-1,784))
+X_train = X_train.astype("float32")
+X_test = X_test.astype("float32")
+
+X_train /= 255
+X_test /= 255
+
+Y_train = np_utils.to_categorical(y_train[:],10)
+Y_test = np_utils.to_categorical(y_test,10)
+
+np.save("X_train",X_train)
+np.save("X_test",X_test)
+np.save("Y_train",Y_train)
+np.save("Y_test",Y_test)
+'''
 # 案例二 
 def mnist():
 
@@ -262,48 +286,52 @@ def mnist():
         plt.imshow(X_test[i].reshape((28,28)))
         plt.show()
 
+
+
+'''
+## 读取原始 fashion mnist 的代码 后续保存成numpy格式方便使用
+## 保存的时候还没有归一化
+import gzip    
+def read_data():
+    files = [
+    'train-labels-idx1-ubyte.gz', 'train-images-idx3-ubyte.gz',
+    't10k-labels-idx1-ubyte.gz', 't10k-images-idx3-ubyte.gz'
+    ]
+    # 我在当前的目录下创建文件夹，里面放入上面的四个压缩文件
+    current = './fashion_mnist_data'
+    paths = []
+    for i in range(len(files)):
+        paths.append('./fashion_mnist_data/'+ files[i])
+    
+    with gzip.open(paths[0], 'rb') as lbpath:
+        y_train = np.frombuffer(lbpath.read(), np.uint8, offset=8)
+
+    with gzip.open(paths[1], 'rb') as imgpath:
+        x_train = np.frombuffer(
+            imgpath.read(), np.uint8, offset=16).reshape(len(y_train), 28, 28)
+
+    with gzip.open(paths[2], 'rb') as lbpath:
+        y_test = np.frombuffer(lbpath.read(), np.uint8, offset=8)
+
+    with gzip.open(paths[3], 'rb') as imgpath:
+        x_test = np.frombuffer(
+            imgpath.read(), np.uint8, offset=16).reshape(len(y_test), 28, 28)
+        
+    return (x_train, y_train), (x_test, y_test)
+
+(train_images, train_labels), (test_images, test_labels) = read_data()
+
+train_labels = get_one_hot(train_labels,10)
+test_labels = get_one_hot(test_labels,10)
+
+np.save("train_images",train_images)
+np.save("train_labels",train_labels)
+np.save("test_images",test_images)
+np.save("test_labels",test_labels)
+'''
 # 案例三 fashion mnist 
 def fashion_mnist():  
-    '''
-    ## 读取原始 fashion mnist 的代码 后续保存成numpy格式方便使用
-    import gzip    
-    def read_data():
-        files = [
-        'train-labels-idx1-ubyte.gz', 'train-images-idx3-ubyte.gz',
-        't10k-labels-idx1-ubyte.gz', 't10k-images-idx3-ubyte.gz'
-        ]
-        # 我在当前的目录下创建文件夹，里面放入上面的四个压缩文件
-        current = './fashion_mnist_data'
-        paths = []
-        for i in range(len(files)):
-            paths.append('./fashion_mnist_data/'+ files[i])
-        
-        with gzip.open(paths[0], 'rb') as lbpath:
-            y_train = np.frombuffer(lbpath.read(), np.uint8, offset=8)
-    
-        with gzip.open(paths[1], 'rb') as imgpath:
-            x_train = np.frombuffer(
-                imgpath.read(), np.uint8, offset=16).reshape(len(y_train), 28, 28)
-    
-        with gzip.open(paths[2], 'rb') as lbpath:
-            y_test = np.frombuffer(lbpath.read(), np.uint8, offset=8)
-    
-        with gzip.open(paths[3], 'rb') as imgpath:
-            x_test = np.frombuffer(
-                imgpath.read(), np.uint8, offset=16).reshape(len(y_test), 28, 28)
-            
-        return (x_train, y_train), (x_test, y_test)
-    
-    (train_images, train_labels), (test_images, test_labels) = read_data()
 
-    train_labels = get_one_hot(train_labels,10)
-    test_labels = get_one_hot(test_labels,10)
-    
-    np.save("train_images",train_images)
-    np.save("train_labels",train_labels)
-    np.save("test_images",test_images)
-    np.save("test_labels",test_labels)
-    '''
     dir_path = "fashion-dataset/"
     train_images = np.load(dir_path+"train_images.npy")
     train_labels = np.load(dir_path+"train_labels.npy")
