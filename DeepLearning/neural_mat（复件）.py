@@ -103,10 +103,6 @@ class Network(object):
         使用神经网络实现预测
         sample: 输入样本
         '''
-        # 自动转换维度 (784,) -> (784,1) 不然容易出问题。当输入维度正确时可以去掉这一句以加快速度
-        if len(sample.shape) == 1:
-            sample = sample.reshape(sample.shape[0],-1)
-
         output = sample
         for layer in self.layers:
             layer.forward(output)
@@ -126,15 +122,6 @@ class Network(object):
         verbose: 打印多少
         freq: 当verbose=1时，隔项打印
         '''
-        print(f"Dimensions: \t input data {data_set.shape}, \t input label {labels.shape}.")
-        # 输入应该是三维数组（每一个输入的列向量是表示为二维数组，训练集的好多列向量组成三维数组）
-        # 若输入不是三维数组，自动转换成三维数组
-        if len(data_set.shape) != 3:
-            labels = labels.reshape((labels.shape[0],labels.shape[1],-1))
-            data_set = data_set.reshape((data_set.shape[0],data_set.shape[1],-1))
-            print(f"Changed to: \t input data {data_set.shape}, \t input label {labels.shape} to match neural network.")
-        print("Starting to train...")
-        time.sleep(5)
         start_time = time.time()
         if verbose == 0:
             '''
@@ -200,11 +187,8 @@ class Network(object):
 
 
 
-
-'''
+# one-hot -> integer
 def get_result(vec):
-
-    
     max_value_index = 0
     max_value = 0
     for i in range(len(vec)):
@@ -212,21 +196,12 @@ def get_result(vec):
             max_value = vec[i]
             max_value_index = i
     return max_value_index
-'''
-
-def get_result(vec):
-    # one-hot -> integer
-    # 自动适应 [1,2,5,4] 和 [[1],[2],[5],[4]] 以及numpy型向量
-    return (list(vec).index(max(vec)))
-
-
 # one-hot
 def evaluate(network, test_data_set, test_labels):
     error = 0
     total = len(test_data_set)
-    # 若数据维度不符，自动转换维度
-    test_data_set=test_data_set.reshape((test_data_set.shape[0],test_data_set.shape[1],-1))
-    test_labels=test_labels.reshape((test_labels.shape[0],test_labels.shape[1],-1))
+    #test_data_set=test_data_set.reshape((test_data_set.shape[0],test_data_set.shape[1]))
+    #test_labels=test_labels.reshape((test_labels.shape[0],test_labels.shape[1]))
 
     for i in range(total):
         label = get_result(test_labels[i])
@@ -292,7 +267,6 @@ def mnist():
     Y_test = np.load(dir_path+"Y_test.npy")
 
     # 导入的数据是 (60000,784,) (60000,10,) 需要处理一下维度 -> (60000,784,1) (60000,10,1)
-    ## 在train那里自动转换维度
     X_train=X_train.reshape((X_train.shape[0],784,-1))
     Y_train=Y_train.reshape((Y_train.shape[0],Y_train.shape[1],-1))
     # 导入的数据是 (10000,784,) (10000,10,) 需要处理一下维度 -> (10000,784,1) (10000,10,1)
@@ -307,13 +281,10 @@ def mnist():
     print("accuracy:",evaluate(network=net, test_data_set=X_test[:10000], test_labels=Y_test[:10000]))
     #plt.imshow(X_test[999].reshape((28,28)))
     #plt.show()
-
-    
     for i in range(1000,1005):
         print("label:",get_result(Y_test[i]),"predict:",get_result(net.predict(X_test[i])))
         plt.imshow(X_test[i].reshape((28,28)))
         plt.show()
-    
 
 
 
@@ -425,9 +396,10 @@ if __name__ == '__main__':
     net.train 在接受数据的时候，维度为三维数组，转换成numpy格式，例如：
     and_data = np.array([[[0],[0]],[[0],[1]],[[1],[0]],[[1],[1]]])
     and_label = np.array([[[0]],[[0]],[[0]],[[1]]])
-    现在已经可以自动识别维度了，直接喂数据即可
     '''
-    
+
     #fashion_mnist()
     #gate()
     mnist()
+    
+    

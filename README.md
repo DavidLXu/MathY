@@ -73,28 +73,37 @@ True
 3
 ```
 
-Below are some of predefined math functions, mostly elementary functions: (trig functions are approximated by Taylor Series)
+Below are some of predefined math functions, mostly elementary functions: (trig functions are approximated by Taylor Series, which can cause errors when farther to zero)
 
 ```python
-factorial(x)
-factorial_2(x)
-combination(n,m)
+>>> factorial(6)
+720
+>>> factorial_2(6)
+48
+>>> combination(2,4)
+6.0
 
-sin(x)
-cos(x)
-tan(x)
+>>> sin(pi)	
+3.328056696991875e-16		# close to 0
+>>> cos(pi)
+-1.0000000000000002			# close to -1
+>>> tan(pi)
+-3.3280566969918744e-16		# close to 0
 
-arcsin(x)
-arccos(x)
-arctan(x)
+>>> arcsin(0),arcsin(1)		# as you can see, the error gets larger
+(0.0, 1.5519891373698251)	# as the input is far from one											# in reality, computers use CORDIC method
+>>> arccos(0),arccos(1)
+(1.5707963267948966, 0.018807189425068812) # same situation
+>>> arctan(0),arctan(10)	# but arctan is surprisingly accurate
+(0.0, 1.5707963257948965)
 
-sqrt(x) # binarysearch and newton method both supported
-exp(x)
-pow(x,y) # where x,y can be real numbers
+>>> sqrt(x) # binarysearch and newton method both supported
+>>> exp(x)
+>>> pow(x,y) # where x,y can be real numbers
 
-ln(x)
-log10(x)
-log(x,y) # logarithm of y on the base of x
+>>> ln(x)
+>>> log10(x)
+>>> log(x,y) # logarithm of y on the base of x
 ```
 
 From the very beginning, MathY is designed not to use any third-party libraries, and these functions are implemented purely with python grammas without even `import math`.
@@ -236,7 +245,7 @@ add_mat(A,B) # TODO: supports multiple inputs mat
 sub_mat(A,B)
 matrix_add(A,B) # same as add_mat, remains due to historical reasons
 matrix_minus(A,B) # same as sub_mat
-times_const(k,A) # return kA
+times_const(k,A) # return k*A
 multiply(A,B,...) # supports multiple inputs mat
 power(A,k)
 det(A)
@@ -269,7 +278,7 @@ For now, basic linear algebra implementations are provided. In `mathy/numeric.py
 
 
 
-## Numeric
+## Numerical Analysis
 
 ```python
 """Interpolation"""

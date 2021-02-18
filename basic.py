@@ -196,7 +196,8 @@ def sqrt(x):
     return temp
 '''
 ###### trigonomitry functions ######
-# sin(x) using Taylor expansions
+
+# Trig functions using Taylor expansions. In reality, they are calculated by CORDIC algorithms.
 def sin(x):
     x = x % (2*pi) # transform any value into [0,2pi] to avoid loss in precision in finite Taylor expansions
     temp = 0
@@ -213,13 +214,14 @@ def cos(x):
     
 def tan(x):
     return sin(x)/cos(x)
-    
+
+# very big errors! need to find some alternative methods
 def arcsin(x):
     # 接近1时误差较大，建议使用分段，Taylor在1处展开
     if abs(x) > 1:
         raise ValueError("math domain error")
     temp=0
-    for n in range(500):
+    for n in range(900):
         temp+=factorial_2(2*n-1)/factorial_2(2*n)*x**(2*n+1)/(2*n+1)
     return temp
 
@@ -227,7 +229,7 @@ def arccos(x):
     if abs(x) > 1:
         raise ValueError("math domain error")
     temp=pi/2
-    for n in range(500):
+    for n in range(900):
         temp-=factorial_2(2*n-1)/factorial_2(2*n)*x**(2*n+1)/(2*n+1)
     return temp
     
@@ -237,7 +239,7 @@ def arctan(x):
     # arctanx=π/2-arctan(1/x)
     temp = 0
     if abs(x) <= 1:
-        for i in range(100):
+        for i in range(900):
             temp = temp + (-1)**i*x**(2*i+1)/(2*i+1)
         return temp
     else:
@@ -315,4 +317,4 @@ def mapping(function,x_list):
     
 if __name__ == "__main__":
     #print(log(2,7840))
-    print(arcsin(1))
+    print(arccos(0))
