@@ -28,13 +28,13 @@ from imports import *
     
 
 if __name__ == '__main__':
-    a = 1
-    x,y = sympy.symbols('x y')
-    A = mat("1 2 3 ;4 5 5 ;3 2 1")
-    eigen_vector(A)
+    #a = 1
+    #x,y = sympy.symbols('x y')
+    #A = mat("1 2 3 ;4 5 5 ;3 2 1")
+    #eigen_vector(A)
     #print(mat2list(A))
     # see if it gets pushed
-    
+    print(sin(9))
 
 
 

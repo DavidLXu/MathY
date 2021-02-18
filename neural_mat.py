@@ -111,7 +111,7 @@ class Network(object):
     def loss(self,label,predict):
         return 0.5*np.sum((np.array(label)-np.array(predict))**2)
 
-    def train(self, labels, data_set, rate, epoch, verbose = 0, freq = 100):
+    def train(self, labels, data_set, rate, epoch, verbose = 1, freq = 1000):
         '''
         训练函数
         labels: 样本标签

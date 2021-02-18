@@ -1,4 +1,4 @@
-from basic import *
+from imports import *
 import sympy # 不得已，用了sympy作符号计算，为解特征值
 
 
@@ -192,6 +192,41 @@ def check_matrix_square(A):
         return True
     else:
         return False
+
+def randmat_diag(row,col=0,largest = 10):
+    import random
+    if col == 0:
+        col = row
+    if col != row:
+        raise ValueError("NOT SQUARE!")
+    A = zeros(row,col)
+    for i in range(row):
+        A[i][i] = random.randint(0,largest)
+    return A
+
+    
+def randmat_sym(row,col = 0,largest = 10,property = "symmetric"):
+    import random
+    if col == 0:
+        col = row
+    if col != row:
+        raise ValueError("NOT SQUARE!")
+    # 生成对称矩阵
+    if property == "symmetric":        
+        A = zeros(row,col)
+        for i in range(row):
+            for j in range(i+1):
+                A[i][j] = random.randint(0,largest)
+                A[j][i] = A[i][j]
+    # 生成反对称矩阵
+    elif property == "skewed":
+        A = zeros(row,col)
+        for i in range(row):
+            for j in range(i):
+                A[i][j] = random.randint(0,largest)
+                A[j][i] = -A[i][j]
+    return A
+
 #这种转置方式有问题
 def transpose(A):
     B = zeros(len(A[0]),len(A))
@@ -437,6 +472,33 @@ def det(A):
 
     return s
 
+# 别人写的算法，计算速度更快一些: https://blog.csdn.net/cinmyheart/article/details/43976423
+def determinant(matrix) :
+    row = len(matrix)
+    col = len(matrix[0])
+
+    if row == 1 :
+        return matrix
+    elif row == 2 :
+        return matrix[0][0]*matrix[1][1] - matrix[1][0] * matrix[0][1]
+
+    ret_val = 0
+    for i in range(0, col) :
+        tmp_mat = [[0 for x in range(0, col-1)] for y in range(0, row-1)]
+
+        for m in range(0, row-1) :
+            n = 0
+            while n < col-1 :
+                if n < i :
+                    tmp_mat[m][n] = matrix[m+1][n]
+                else :
+                    tmp_mat[m][n] = matrix[m+1][n+1] 
+                n += 1
+
+        ret_val += ((-1)**(i)) * matrix[0][i] * \
+                    determinant(tmp_mat)
+
+    return ret_val
 
 # diy a function like copy.deepcopy() 
 def deepcopy(A):
@@ -501,6 +563,73 @@ def inv(A):
             B[i][j]=B[i][j]/det(A)
     return B
 
+# 别人写的inverse, 因为原理不同，速度快很多，但鲁棒性不好，容易发生float division by zero 
+def inverse(mat) :
+    if mat is None :
+        return
+
+    # make sure that this matrix that you inputed is invertible
+    if  determinant(mat) == 0 :
+        print("ATTENTION! The determinant of matrix is ZERO")
+        print("This matrix is uninvertible")
+        return
+
+    row = len(mat)
+    col = len(mat[0])
+
+    #matrix = copy.copy(mat)
+    matrix = deepcopy(mat)
+#        matrix = [[0 for i in range(0, col)] for j in range(0, row)]
+#        for i in range(0, row) :
+#            for j in range(0, col) :
+#                matrix[i][j] = mat[i][j]
+
+    for i in range(0, row) :
+        for j in range(0, col) :
+            if i == j :
+                matrix[i] += [1]
+            else :
+                matrix[i] += [0]
+
+    row = len(matrix)
+    col = len(matrix[0])
+
+    for i in range(0, row) :
+        if matrix[i][i] is 0 :
+            for k in range(i+1, row) :
+                if matrix[k][i] is not 0 :
+                    break
+
+            if k is not i+1 :
+                for j in range(0, col) :
+                    matrix[i][j], matrix[k][j] = matrix[k][j], matrix[i][j]
+
+        for k in range(i+1, row) :
+            if matrix[k][i] is not 0 :
+                times = (1.0*matrix[k][i])/matrix[i][i]
+                for j in range(i, col) :
+                    matrix[k][j] /= times
+                    matrix[k][j] -= matrix[i][j]
+
+    for i in range(0, row) :
+        for j in range(i+1, col//2) :
+            if matrix[i][j] is not 0 :
+                times = matrix[i][j]/matrix[j][j]
+                for k in range(j, col) :
+                    matrix[i][k] -= times * matrix[j][k]
+
+
+    for i in range(0, row) :
+        times = matrix[i][i]
+        for j in range(0, col) :
+            matrix[i][j] /= times
+
+    output = [[0 for i in range(0, col//2)] for j in range(0, row)]
+    for i in range(0, row) :
+        for j in range(0, col//2) :
+            output[i][j] = matrix[i][j+col//2]
+
+    return output
 
 
 #### functions below changes the original input matrix, copy if necessary ###
@@ -973,7 +1102,7 @@ def is_orthogonal(A):
                     return False
     return True
 
-
+# 解析法求特征值，用到sympy
 def eigen_value(A):
     if check_matrix_square(A):
         
@@ -1003,7 +1132,109 @@ def eigen_vector(A):
     for i in range(len(val)):
         S = matrix_add(A,times_const(-val[i],E))
         ##############这里回代矩阵已经有了，就差一个返回解向量的函数
-        printm(S)
+        print(inv(S))
+        #print(solve_linear_equation(S,zeros(len(S[0]),1)))
+
+##########################################################################
+# 别人写的 https://blog.csdn.net/cinmyheart/article/details/43976423
+# 为了后面的数值特征值
+
+def dot_product(A, B) :
+    if A is None or B is None :
+        return
+
+    len_A = len(A)
+    len_B = len(B)
+
+    if len_A != len_B :
+        print("It's Illegal to do dot product with the two matrixes", \
+        "which have different size")
+        return
+
+    sum_val = 0
+    for i in range(0, len_A) :
+        sum_val += A[i]*B[i]
+
+    return sum_val
+
+
+def gram_schimidt(A) :
+
+    if A is None :
+        return
+    
+    A_T = transpose(A)
+
+    row = len(A_T)
+    col = len(A_T[0])
+
+    V = [[0 for i in range(0, col)] for j in range(0, row)]
+    for i in range(0, row) :
+        tmp_mat = [0 for x in range(0, col)]
+
+        for j in range(0, col) :
+            tmp = A_T[i][j]
+            for k in range(0, i) :
+                factor = (1.0*dot_product(A_T[i], V[k])) /  dot_product(V[k], V[k])
+                tmp -= factor*V[k][j]
+
+            V[i][j] = tmp
+
+    V = transpose(V)
+
+    return V
+
+def qr_decomposition(A) :
+    if A is None :
+        return
+
+    orthogonal_mat = transpose(gram_schimidt(A))
+
+    row = len(orthogonal_mat)
+    col = len(orthogonal_mat[0])
+
+    Q = [[0 for i in range(0, col)] for j in range(0, row)]
+    for i in range(0, row) :
+        mag = norm([orthogonal_mat[i]])
+        for j in range(0, col) :
+            Q[i][j] = orthogonal_mat[i][j]/mag
+
+    R = multiply(Q, A)
+    Q = transpose(Q)
+
+    return (Q, R)
+ 
+# 数值法求特征值 缺点是不能计算特征值为0的情况（若遇到，使用eigen_value）
+def eigen(A):
+    '''
+    return value:
+    tmp_mat  特征值所在的矩阵
+    eig_vec  特征向量
+    '''
+    if A is None :
+        return
+
+    tmp_mat = deepcopy(A)
+    for i in range(0, 1000) :
+        '''
+        多次运行等收敛
+        '''
+        (Q, R) = qr_decomposition(tmp_mat)
+        tmp_mat = multiply(R, Q)
+
+    row = len(tmp_mat)
+    col = len(tmp_mat[0])
+    for i in range(0, row) :
+        for j in range(0, col) :
+            if i != j :
+                tmp_mat[i][j] = 0
+
+    eig_vec = inv(sub(A, tmp_mat))
+    return (tmp_mat, eig_vec)       
+
+# 别人写的解除                        
+###########################################################
+
 
 def mat2list(mat):
     """
@@ -1011,12 +1242,32 @@ def mat2list(mat):
     """
     pass
 
+def QR(A):
+    if rank(A) != len(A):
+        raise ValueError("NOT a inversable matrix!")
+    Q = grouptuple_2_matrix(schmidt_matrix(A)) # Q = AT
+    T = mul(inv(A),Q)                       # 求T： A^(-1)*Q
+    R = inv(T)                              # 求R：R =  T^(-1)
+    #print_matrix(Q,name = "Q")
+    #print_matrix(R,name = "R")
+    #print_matrix(mul(Q,R),name = "Q*R")
+    return Q,R
+
+def EVD(A):
+    # 方阵得到N个线性无关的特征向量
+    # 实对称矩阵得到N个正交的特征向量
+    pass
+
+def SVD(A):
+    pass
+
+
 
 
 if __name__ == "__main__":
-    a = sympy.symbols('a')
-    A = [[a,1],[2,3]]
-
+    #a = sympy.symbols('a')
+    #A = [[a,1],[2,3]]
+    #printm(A)
 
 
     '''
@@ -1049,3 +1300,36 @@ if __name__ == "__main__":
     P = grouptuple_2_matrix(schmidt_matrix(A)) # 把正交向量组转成正交矩阵
     print(is_orthogonal(P))
     '''
+
+    # QR 分解
+
+
+    #A = randmat(3)
+    #A = [[4,0,0],[-2,1,0],[5,3,4]]
+    # A = [[2,1],[1,2]]
+    # print(eigen_value(A))
+    # a,b = eigen(A)
+    # printm(A)
+    # printm(a)
+    # printm(b)
+    # printm(multiply((b),a,transpose(b))) # 不知道为啥乘不出来原结果
+
+    
+    #print(eigen_vector(A))
+    # printm(randmat_sym(3,property="skewed"))
+
+    import numpy as np
+    x=np.mat(np.array([[1.,2.,3.],[4.,5.,6.],[7.,8.,9.]]))
+    
+    x = [[1.,2.,3.],[5,5.,6.],[7.,8.,9.]]
+    a,b = np.linalg.eig(x)
+    s,v,d = np.linalg.svd(x)
+    print(a)
+
+    print(v)
+    
+
+
+
+
+    

@@ -3,7 +3,7 @@ In MathY, matrix can be saved as .csv file.
 read_mat and write_mat is for .csv file, not for .mat file!
 For .mat file, use "from scipy.io import loadmat" and loadmat(filename)
 """
-from linalg import matrix_shape
+from linalg import *
 import time
 
 def read_matrix(filename,datatype = float):

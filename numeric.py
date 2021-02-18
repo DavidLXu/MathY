@@ -318,6 +318,17 @@ def principal_minor_check(A):
             print("各阶顺序主子式不全为0")
             return False
     return True
+# A = QR decomposition
+def QR(A):
+    if rank(A) != len(A):
+        raise ValueError("NOT a inversable matrix!")
+    Q = grouptuple_2_matrix(schmidt_matrix(A)) # Q = AT
+    T = mul(inv(A),Q)                       # 求T： A^(-1)*Q
+    R = inv(T)                              # 求R：R =  T^(-1)
+    #print_matrix(Q,name = "Q")
+    #print_matrix(R,name = "R")
+    #print_matrix(mul(Q,R),name = "Q*R")
+    return Q,R
 
 # A = LU decomposition
 def lu(A): # 仅限于各阶主子式都不为零，否则需要使用plu分解
@@ -354,6 +365,8 @@ def lu(A): # 仅限于各阶主子式都不为零，否则需要使用plu分解
 # A = PLU decomposition
 #失败，PA之后还是有0主元的情况，不知问题出在那里##
 def plu(A): #
+    
+    '''
     print("Waring: This algorithm is not well implemented")
     P = eyes(len(A))    
     for j in range(len(A)):
@@ -375,7 +388,64 @@ def plu(A): #
     print_matrix(P,name = "P")
     L,U = lu(multiply(P,A))
     return transpose(P),L,U
+    '''
+    pass
 
+
+
+
+
+# 别人写的PLU分解 https://blog.csdn.net/cinmyheart/article/details/43976423
+def plu_decomposition(A):
+    '''
+    感觉有点问题，分解出来PLU再乘回去，和原矩阵的行列顺序可能不太一致
+    '''
+    n = len(A)
+    a = A
+
+    pi = [i for i in range(0, n)]
+
+    for k in range(0, n) :
+        p = 0
+        for i in range(k, n) :
+            if abs(a[i][k]) > p :
+                p = abs(a[i][k])
+                k_prime = i
+
+        if p is 0 :
+            print("singular matrix")
+            return 
+
+        pi[k], pi[k_prime]  = pi[k_prime], pi[k]
+
+        for i in range(0, n) :
+            a[k][i], a[k_prime][i] = a[k_prime][i], a[k][i]
+
+        for i in range(k+1, n) :
+            a[i][k] /= (a[k][k] * 1.0)
+            for j in range(k+1, n) :
+                a[i][j] -= a[i][k] * a[k][j]
+
+    P = [[ 0 for i in range(0, len(pi))] for j in range(0, len(pi))]
+    for i in range(0, len(pi)) :
+        P[i][ pi[i] ] = 1
+
+    L = [[0 for i in range(0, n)] for j in range(0, n)]
+    U = [[0 for i in range(0, n)] for j in range(0, n)]
+
+    row = len(L)
+    col = len(L[0])
+    for i in range(0, row) :
+        for j in range(0, col) :
+            if j < i :
+                L[i][j] = a[i][j]
+            elif j == i :
+                L[i][j] = 1
+                U[i][j] = a[i][j]
+            else :
+                U[i][j] = a[i][j]
+
+    return (P, L, U)
 
 # Cholesky decomposition
 def cholesky(A, mode = 'LLT'):
@@ -459,6 +529,8 @@ def dlu_decompose(A):
         for j in range(i+1,len(A)):
             U[i][j] = -A[i][j]
     return D,L,U
+
+
 
 # CH07
 #------Iteration for Linear Equation-----
@@ -612,6 +684,7 @@ def runge_kutta(f = lambda x,y: -y+x+1 ,y0 = 1,start = 0,end = 1,h = 0.1, order 
         raise ValueError("阶数请输入2或4！")
 
 if __name__ == '__main__':
+    '''
     a = sympy.symbols("a")
     A = [[10,-1,4],[-1,7,3],[2,-5,a]]
     b = [[1],[0],[-1]]
@@ -638,4 +711,7 @@ if __name__ == '__main__':
     euler_improved_plot = plt.plot(x1,y1)
     legend = plt.legend(["Runge-Kutta-2","Runge-Kutta-4"],loc='upper left')
     plt.show()
+    '''
+
+    
     
