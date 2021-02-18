@@ -1,11 +1,11 @@
 import random
-from numpy import *
+import numpy as np
 from functools import reduce
 
 import sys
 sys.path.append('../') # 在当前目录下才可以运行
 
-from imports import *
+#from imports import *
 import pickle # save and read trained network
 import time
 
@@ -362,7 +362,6 @@ def gate():
 
 if __name__ == '__main__':
     '''
-    
     net.train 在接受数据的时候，维度为三维数组，转换成numpy格式，例如：
     and_data = np.array([[[0],[0]],[[0],[1]],[[1],[0]],[[1],[1]]])
     and_label = np.array([[[0]],[[0]],[[0]],[[1]]])
