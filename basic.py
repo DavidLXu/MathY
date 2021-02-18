@@ -207,7 +207,7 @@ def sin(x):
 def cos(x):
     x = x % (2*pi)
     temp = 1
-    for i in range(1,20):
+    for i in range(1,25):
         temp = temp + ((-1)**(i))*(x**(2*i))/factorial(2*i)
     return temp#float("%.3f"%temp)
     
@@ -219,7 +219,7 @@ def arcsin(x):
     if abs(x) > 1:
         raise ValueError("math domain error")
     temp=0
-    for n in range(250):
+    for n in range(500):
         temp+=factorial_2(2*n-1)/factorial_2(2*n)*x**(2*n+1)/(2*n+1)
     return temp
 
@@ -227,7 +227,7 @@ def arccos(x):
     if abs(x) > 1:
         raise ValueError("math domain error")
     temp=pi/2
-    for n in range(250):
+    for n in range(500):
         temp-=factorial_2(2*n-1)/factorial_2(2*n)*x**(2*n+1)/(2*n+1)
     return temp
     
@@ -314,4 +314,5 @@ def mapping(function,x_list):
     return y_list
     
 if __name__ == "__main__":
-    print(log(2,7840))
+    #print(log(2,7840))
+    print(arcsin(1))

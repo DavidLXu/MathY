@@ -105,10 +105,10 @@ def print_vector_group(vec_tuple,precision=4):
             raise ValueError("NOT a vector!")
 
 # simplify the function
-def printm(A,precision = 2):
-    print_matrix(A,precision)
-def printv(A):
-    print_vector(A)   
+def printm(A,precision = 2,name = "Matrix"):
+    print_matrix(A,precision,name)
+def printv(A,precision = 4,name = "Vector"):
+    print_vector(A,precision,name)   
 
 # every vector in MathY is represented as a 2d matrix
 def list2vec(l,vectype = "col"):
@@ -595,7 +595,7 @@ def inverse(mat) :
     col = len(matrix[0])
 
     for i in range(0, row) :
-        if matrix[i][i] is 0 :
+        if matrix[i][i] == 0 :
             for k in range(i+1, row) :
                 if matrix[k][i] != 0 :
                     break

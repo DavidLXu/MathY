@@ -30,10 +30,13 @@ from imports import *
 if __name__ == '__main__':
 
     A = [[1],[0]]
-    theta = 3.14
+    printv(A,name = "Vec before rotation")
+    theta = pi
     R = [[cos(theta),-sin(theta)],
          [sin(theta), cos(theta)]]
-    print_matrix(R,name = "R")
+    printm(R,name = "Rotation Matrix")
+    printm(mul(R,A),name = "Vec after rotation")
+
 
     
     
