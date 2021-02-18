@@ -3,4 +3,6 @@
 /legacy/
 /tempCodeRunnerFile.py
 /README2.md
+/fashion-dataset/
+/mnist-dataset/
 *.npy
