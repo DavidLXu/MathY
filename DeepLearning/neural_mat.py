@@ -293,11 +293,11 @@ def mnist():
 
     # 导入的数据是 (60000,784,) (60000,10,) 需要处理一下维度 -> (60000,784,1) (60000,10,1)
     ## 在train那里自动转换维度
-    X_train=X_train.reshape((X_train.shape[0],784,-1))
-    Y_train=Y_train.reshape((Y_train.shape[0],Y_train.shape[1],-1))
+    #X_train=X_train.reshape((X_train.shape[0],784,-1))
+    #Y_train=Y_train.reshape((Y_train.shape[0],Y_train.shape[1],-1))
     # 导入的数据是 (10000,784,) (10000,10,) 需要处理一下维度 -> (10000,784,1) (10000,10,1)
-    X_test=X_test.reshape((X_test.shape[0],784,-1))
-    Y_test=Y_test.reshape((Y_test.shape[0],Y_test.shape[1],-1))
+    #X_test=X_test.reshape((X_test.shape[0],784,-1))
+    #Y_test=Y_test.reshape((Y_test.shape[0],Y_test.shape[1],-1))
 
     net = Network([784, 10, 10])
     #net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=4,verbose=1,freq=1000) #准确率达91%, net = Network([784, 16, 10])
