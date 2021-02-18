@@ -4,11 +4,29 @@ Welcome to MathY! MathY is a simple math toolbox for **educational or recreation
 
 ## How to use?
 
-* Run in terminal: ` python -i mathy-latest.py`.(interactive mode)
+Clone the repository:
+
+```
+git clone https://github.com/DavidLXu/MathY.git MathY
+cd MathY
+```
+
+Or you can download `zip` file and unzip it.
+
+Two ways to run the program: **script mode** and **interactive mode**
+
 * Write your code in `mathy-latest.py`, under `if __name__ == "__main__:" `, then run the script. (script mode)
-* For windows users, run `MathY.bat` in MathY directory. (interactive mode)
+* Run in terminal: ` python -i mathy-latest.py`.(interactive mode)
+* For Windows users, run `MathY.bat` in MathY directory. (interactive mode)
+* For Linux users, run `MathY.sh` in MathY directory. (interactive mode)
 
 You can use `dir()` to have a quick look of all supported functions.
+
+### Optional Prerequisites
+
+For symbolic solutions, you have to install `sympy` by `pip install sympy`. If you are in China, use `pip install sympy -i https://pypi.tuna.tsinghua.edu.cn/simple `  instead for higher speed.
+
+For scripts under `DeepLearning` , you can install `numpy` for accelerated matrix operations and `pickle` to save your trained modal. Again, use `pip install numpy sympy -i https://pypi.tuna.tsinghua.edu.cn/simple ` if you are in China.
 
 ## Basic operations
 
@@ -55,7 +73,7 @@ True
 3
 ```
 
-Below are some of predefined math functions, mostly elementary functions:
+Below are some of predefined math functions, mostly elementary functions: (trig functions are approximated by Taylor Series)
 
 ```python
 factorial(x)
@@ -66,6 +84,10 @@ sin(x)
 cos(x)
 tan(x)
 
+arcsin(x)
+arccos(x)
+arctan(x)
+
 sqrt(x) # binarysearch and newton method both supported
 exp(x)
 pow(x,y) # where x,y can be real numbers
@@ -73,10 +95,6 @@ pow(x,y) # where x,y can be real numbers
 ln(x)
 log10(x)
 log(x,y) # logarithm of y on the base of x
-"""not implemented yet"""
-arcsin(x)
-arccos(x)
-arctan(x)
 ```
 
 From the very beginning, MathY is designed not to use any third-party libraries, and these functions are implemented purely with python grammas without even `import math`.
@@ -309,3 +327,4 @@ math.exp(), or numpy.sin() numpy.exp().
 """
 ```
 
+## Neural Networks

@@ -37,7 +37,7 @@ def print_matrix(A,precision=2,name = 'Matrix',var_type = "auto"):
     if var_type == "auto":
         for a in range(len(A)):
             for b in range(len(A[0])): 
-                if type(A[a][b]) == sympy.symbol.Symbol:
+                if type(A[a][b]) == sympy.Symbol: # for older version sympy: sympy.symbol.Symbol
                     var_type = "variable"
                     break
     for i in range(len(A)):
@@ -597,15 +597,15 @@ def inverse(mat) :
     for i in range(0, row) :
         if matrix[i][i] is 0 :
             for k in range(i+1, row) :
-                if matrix[k][i] is not 0 :
+                if matrix[k][i] != 0 :
                     break
 
-            if k is not i+1 :
+            if k != i+1 :
                 for j in range(0, col) :
                     matrix[i][j], matrix[k][j] = matrix[k][j], matrix[i][j]
 
         for k in range(i+1, row) :
-            if matrix[k][i] is not 0 :
+            if matrix[k][i] != 0 :
                 times = (1.0*matrix[k][i])/matrix[i][i]
                 for j in range(i, col) :
                     matrix[k][j] /= times
@@ -613,7 +613,7 @@ def inverse(mat) :
 
     for i in range(0, row) :
         for j in range(i+1, col//2) :
-            if matrix[i][j] is not 0 :
+            if matrix[i][j] != 0 :
                 times = matrix[i][j]/matrix[j][j]
                 for k in range(j, col) :
                     matrix[i][k] -= times * matrix[j][k]
@@ -1318,15 +1318,7 @@ if __name__ == "__main__":
     #print(eigen_vector(A))
     # printm(randmat_sym(3,property="skewed"))
 
-    import numpy as np
-    x=np.mat(np.array([[1.,2.,3.],[4.,5.,6.],[7.,8.,9.]]))
     
-    x = [[1.,2.,3.],[5,5.,6.],[7.,8.,9.]]
-    a,b = np.linalg.eig(x)
-    s,v,d = np.linalg.svd(x)
-    print(a)
-
-    print(v)
     
 
 

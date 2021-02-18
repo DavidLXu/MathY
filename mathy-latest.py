@@ -28,13 +28,15 @@ from imports import *
     
 
 if __name__ == '__main__':
-    #a = 1
-    #x,y = sympy.symbols('x y')
-    #A = mat("1 2 3 ;4 5 5 ;3 2 1")
-    #eigen_vector(A)
-    #print(mat2list(A))
-    # see if it gets pushed
-    print(sin(9))
+
+    A = [[1],[0]]
+    theta = 3.14
+    R = [[cos(theta),-sin(theta)],
+         [sin(theta), cos(theta)]]
+    print_matrix(R,name = "R")
+
+    
+    
 
 
 
