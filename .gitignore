@@ -7,4 +7,6 @@
 /README2.md
 /fashion-dataset/
 /mnist-dataset/
+/.vscode
+/__init__.py
 *.npy
