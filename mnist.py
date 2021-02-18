@@ -1,5 +1,5 @@
 from neural_mat import *
-from imports import *
+
 if __name__ == "__main__":
     # 案例二 mnist
     '''

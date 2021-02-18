@@ -8,6 +8,7 @@ sys.path.append('../') # 在当前目录下才可以运行
 #from imports import *
 import pickle # save and read trained network
 import time
+import matplotlib.pyplot as plt
 
 random.seed(123)
 def sigmoid(inX):
