@@ -1,13 +1,14 @@
 import random
-from numpy import *
+import numpy as np
 from functools import reduce
 
-#import sys
-#sys.path.append('../') # 在当前目录下才可以运行
+import sys
+sys.path.append('../') # 在当前目录下才可以运行
 
-from imports import *
+#from imports import *
 import pickle # save and read trained network
 import time
+import matplotlib.pyplot as plt
 
 random.seed(123)
 def sigmoid(inX):
@@ -111,7 +112,7 @@ class Network(object):
     def loss(self,label,predict):
         return 0.5*np.sum((np.array(label)-np.array(predict))**2)
 
-    def train(self, labels, data_set, rate, epoch, verbose = 0, freq = 100):
+    def train(self, labels, data_set, rate, epoch, verbose = 1, freq = 1000):
         '''
         训练函数
         labels: 样本标签
@@ -225,12 +226,44 @@ def get_one_hot(targets, nb_classes):
     res = np.eye(nb_classes)[np.array(targets).reshape(-1)]
     return res.reshape(list(targets.shape)+[nb_classes])
 
-if __name__ == '__main__':
 
-    
-    # 案例二 mnist.py
-    """
-    # 案例三 fashion mnist
+
+###########################
+### 一些案例，写在函数里 ###
+###########################
+
+
+# 案例二 
+def mnist():
+
+    dir_path = "mnist-dataset/"
+    X_train = np.load(dir_path+"X_train.npy")
+    X_test = np.load(dir_path+"X_test.npy")
+    Y_train = np.load(dir_path+"Y_train.npy")
+    Y_test = np.load(dir_path+"Y_test.npy")
+
+    # 导入的数据是 (60000,784,) (60000,10,) 需要处理一下维度 -> (60000,784,1) (60000,10,1)
+    X_train=X_train.reshape((X_train.shape[0],784,-1))
+    Y_train=Y_train.reshape((Y_train.shape[0],Y_train.shape[1],-1))
+    # 导入的数据是 (10000,784,) (10000,10,) 需要处理一下维度 -> (10000,784,1) (10000,10,1)
+    X_test=X_test.reshape((X_test.shape[0],784,-1))
+    Y_test=Y_test.reshape((Y_test.shape[0],Y_test.shape[1],-1))
+
+    net = Network([784, 10, 10])
+    #net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=4,verbose=1,freq=1000) #准确率达91%, net = Network([784, 16, 10])
+    net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=2)
+    #save_modal(net,'net_mnist.pkl')
+    #net = load_modal('net_mnist_all.pkl')
+    print("accuracy:",evaluate(network=net, test_data_set=X_test[:10000], test_labels=Y_test[:10000]))
+    #plt.imshow(X_test[999].reshape((28,28)))
+    #plt.show()
+    for i in range(1000,1005):
+        print("label:",get_result(Y_test[i]),"predict:",get_result(net.predict(X_test[i])))
+        plt.imshow(X_test[i].reshape((28,28)))
+        plt.show()
+
+# 案例三 fashion mnist 
+def fashion_mnist():  
     '''
     ## 读取原始 fashion mnist 的代码 后续保存成numpy格式方便使用
     import gzip    
@@ -271,11 +304,11 @@ if __name__ == '__main__':
     np.save("test_images",test_images)
     np.save("test_labels",test_labels)
     '''
-
-    train_images = np.load("train_images.npy")
-    train_labels = np.load("train_labels.npy")
-    test_images = np.load("test_images.npy")
-    test_labels = np.load("test_labels.npy")
+    dir_path = "fashion-dataset/"
+    train_images = np.load(dir_path+"train_images.npy")
+    train_labels = np.load(dir_path+"train_labels.npy")
+    test_images = np.load(dir_path+"test_images.npy")
+    test_labels = np.load(dir_path+"test_labels.npy")
 
     
     train_images = train_images/255.0
@@ -289,11 +322,10 @@ if __name__ == '__main__':
     test_labels=test_labels.reshape((test_labels.shape[0],test_labels.shape[1],-1))
 
 
-
-    net = Network([784, 128, 128, 10])
-    net.train(labels=train_labels[:60000],data_set=train_images[:60000],rate=0.5,epoch=3,verbose=1,freq=5000)
+    net = Network([784, 10, 10])
+    net.train(labels=train_labels[:60000],data_set=train_images[:60000],rate=0.5,epoch=3,verbose=1,freq=500)
     #net.train(labels=Y_train[:10000],data_set=X_train[:10000],rate=0.7,epoch=5, verbose=1, freq = 1000)
-    save_modal(net,'net_fashion_matrix_20201112_60000x10_784_128_128_10_rate0.5.pkl')
+    #save_modal(net,'net_fashion_matrix_20201112_60000x10_784_128_128_10_rate0.5.pkl')
     #net = load_modal('net_mnist_matrix_20201112_60000x100_784_128_10_rate0.7acc0.9788.pkl')
 
     fashion_list = {0:	"T-shirt/top T恤",
@@ -306,40 +338,40 @@ if __name__ == '__main__':
                     7:	"Sneaker 运动鞋",
                     8:	"Bag 包",
                     9:	"Ankle boot 踝靴"}
-    for i in range(1000,1015):
+    for i in range(1000,1005):
         print("label:",fashion_list[get_result(test_labels[i])],"predict:",fashion_list[get_result(net.predict(test_images[i]))])
         plt.imshow(test_images[i].reshape((28,28)))
         plt.show()
 
     print("accuracy:",evaluate(network=net, test_data_set=test_images[:10000], test_labels=test_labels[:10000]))
 
+# 案例四 与或门
+def gate():
+
+    and_data = np.array([[[0],[0]],[[0],[1]],[[1],[0]],[[1],[1]]])
+    and_label = np.array([[[0]],[[0]],[[0]],[[1]]])
+
+    #or_data=[[0,0],[0,1],[1,0],[1,1]]
+    #or_label=[[0],[1],[1],[1]]
+
+    net_and = Network([2, 1])
+    net_and.train(labels=and_label,data_set=and_data,rate=0.5,epoch=3000)
+    #net_or = Network([2, 1])
+    #net_or.train(labels=or_label,data_set=or_data,rate=0.5,epoch=3000)
+
+    print(net_and.predict([0,1]))
+
+    #print(net_or.predict([0,1]))
+
+if __name__ == '__main__':
+    '''
+    net.train 在接受数据的时候，维度为三维数组，转换成numpy格式，例如：
+    and_data = np.array([[[0],[0]],[[0],[1]],[[1],[0]],[[1],[1]]])
+    and_label = np.array([[[0]],[[0]],[[0]],[[1]]])
+    '''
+
+    #fashion_mnist()
+    #gate()
+    mnist()
     
-
-    # 案例四 cifar10
-    def load_CIFAR_batch(filename):
-        """ load single batch of cifar """
-        with open(filename, 'rb') as f:
-            datadict = pickle.load(f,encoding='latin1')
-            X = datadict['data']
-            Y = datadict['labels']
-            X = X.reshape(10000, 3, 32,32).transpose(0,2,3,1).astype("float")
-            Y = np.array(Y)
-            return X, Y
-
-    def load_CIFAR10(ROOT):
-        """ load all of cifar """
-        xs = []
-        ys = []
-        for b in range(1,6):
-            f = os.path.join(ROOT, 'data_batch_%d' % (b, ))
-            X, Y = load_CIFAR_batch(f)
-            xs.append(X)
-            ys.append(Y)
-        Xtr = np.concatenate(xs)#使变成行向量
-        Ytr = np.concatenate(ys)
-        del X, Y
-        Xte, Yte = load_CIFAR_batch(os.path.join(ROOT, 'test_batch'))
-        return Xtr, Ytr, Xte, Yte
-
-    (train_images, train_labels), (test_images, test_labels) = load_CIFAR10()
     
