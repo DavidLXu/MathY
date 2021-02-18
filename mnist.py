@@ -1,5 +1,5 @@
 from neural_mat import *
-
+from imports import *
 if __name__ == "__main__":
     # 案例二 mnist
     '''
@@ -52,9 +52,14 @@ if __name__ == "__main__":
     X_test=X_test.reshape((X_test.shape[0],X_test.shape[1],-1))
     Y_test=Y_test.reshape((Y_test.shape[0],Y_test.shape[1],-1))
 
+    #训练模型
     #net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=100)
     #net.train(labels=Y_train[:10000],data_set=X_train[:10000],rate=0.7,epoch=5, verbose=1, freq = 1000)
+
+    #保存模型
     #save_modal(net,'net_mnist_matrix_20201112_60000x100_784_64_10_rate0.7.pkl')
+
+    #读取模型
     net = load_modal('net_mnist_matrix_20201112_60000x100_784_128_10_rate0.7acc0.9788.pkl')
     for i in range(1000,1005):
         print("label:",get_result(Y_test[i]),"predict:",get_result(net.predict(X_test[i])))
