@@ -1,16 +1,21 @@
 import random
-import numpy as np
+import time
 from functools import reduce
 
-import sys
-sys.path.append('../') # 在当前目录下才可以运行
 
-#from imports import *
-import pickle # save and read trained network
-import time
-import matplotlib.pyplot as plt
+import numpy as np              # 本脚本的核心运算依赖于numpy
 
-random.seed(123)
+import pickle                   # (optional) save and read trained network
+import matplotlib.pyplot as plt # (optional) 绘图
+import pandas as pd             # (optional) 用于导入波士顿房价csv
+
+
+# import sys
+# sys.path.append('../')        # 加入 MathY import 目录
+# from imports import *         # 可以与 MathY 库中的函数联动
+
+random.seed(123) # 疑问，为什么设定了种子，每次运行结果还是不一样？
+
 def sigmoid(inX):
     return 1.0 / (1 + exp(-inX))
 
@@ -247,6 +252,12 @@ class Network(object):
                 print("Dimensions matched!")
         return sample
 
+    def plot():
+        """
+        绘制学习曲线
+        """
+        pass
+
 
 def get_result(vec):
     '''
@@ -307,7 +318,7 @@ def Z_ScoreNormalization(x,mu,sigma):
 
 # 案例一 房价预测
 def house_price():
-    import pandas as pd
+
     data = pd.read_csv(r'./DeepLearning/波士顿房价.csv')
 
     # 分开train和label
@@ -345,28 +356,6 @@ def house_price():
         label = (Y.max()-Y.min())*label_1+Y.min()
 
         print("predict: %.3f, \tlabel: %.3f"%(pred[0][0],label))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
