@@ -132,7 +132,7 @@ class Network(object):
         rate:       学习速率
         epoch:      训练轮数
         verbose:    打印多少
-        freq:       当verbose=1时，隔项打印
+        freq:       当verbose=1时，计算loss采样以及打印信息的频率
         pause_info: 暂停显示信息的时间
         '''
         if check_dim == True:
@@ -141,18 +141,24 @@ class Network(object):
         print("Starting to train...")
         time.sleep(pause_info)
         start_time = time.time()
+        
         if verbose == 0:
             '''
             训练时只打印epoch和最终时间，非常快
             '''
+            #self.loss_mean = [] # 用于后续画图, 因为性能原因注释掉
             for i in range(epoch):
+                #loss_list = [] # 用于后续画图
                 for d in range(len(data_set)):
                     self.train_one_sample(labels[d], 
                         data_set[d], rate)
+                    loss = self.loss(labels[d], self.predict(data_set[d],check_dim=False))
+                    #loss_list.append(loss) # 用于后续画图
                 now_time = time.time()
                 m, s = divmod(now_time-start_time, 60)
                 h, m = divmod(m, 60)
                 print('epoch %d of %d, time used %02d:%02d:%02d' % (i, epoch,h, m, s))
+                #self.loss_mean.append(np.mean(loss_list)) # 用于后续画图
             end_time = time.time()
             m, s = divmod(end_time-start_time, 60)
             h, m = divmod(m, 60)
@@ -160,22 +166,27 @@ class Network(object):
 
         elif verbose == 1:
             '''
-            训练时只打印epoch，sample loss 和实时时间，因为占用stdout，会慢很多
+            训练时打印epoch，sample loss和实时时间，因为计算loss并占用stdout，会慢很多
             '''
+            self.loss_mean = []
             for i in range(epoch):
+                loss_list = [] # 用于后续画图
                 for d in range(len(data_set)):
                     self.train_one_sample(labels[d], 
                         data_set[d], rate)
                     if d % freq ==0:
                         loss = self.loss(labels[d], self.predict(data_set[d],check_dim=False))
+                        loss_list.append(loss) # 用于后续画图
                         now_time = time.time()
                         m, s = divmod(now_time-start_time, 60)
                         h, m = divmod(m, 60)
-                        print('epoch %d of %d, sample %d of %d, loss %f, time used %02d:%02d:%02d' % (i, epoch, d,len(data_set),loss,h,m,s))
+                        print('epoch %d of %d,\tsample %d of %d,\tloss %f,\ttime used %02d:%02d:%02d' % (i, epoch, d,len(data_set),loss,h,m,s))
+                self.loss_mean.append(np.mean(loss_list)) # 用于后续画图
             end_time = time.time()
             m, s = divmod(end_time-start_time, 60)
             h, m = divmod(m, 60)
             print("Training time used %02d:%02d:%02d" % (h, m, s))
+
         else:
             print("please input verbose = 1 or verbose = 0")
 
@@ -202,7 +213,7 @@ class Network(object):
         for layer in self.layers:
             layer.update(rate)
 
-    def check_dimensions(self, labels, data_set):
+    def check_dimensions(self, labels, data_set,show = True):
         '''
         检查输入数据集和标签集的维度是否和网络相匹配
         如果是简单的维度问题，可以自动转换数据集的维度
@@ -215,8 +226,9 @@ class Network(object):
 
         required_input_shape = (data_set.shape[0],self.layers_num[0],1)
         required_output_shape = (labels.shape[0],self.layers_num[-1],1)
-        print(f"Input dimensions: \t dataset {data_set.shape}, \t labels {labels.shape}.")
-        print(f"Required dimensions: \t dataset {required_input_shape}, \t labels {required_output_shape}.")
+        if show == True:
+            print(f"Input dimensions: \t dataset {data_set.shape}, \t labels {labels.shape}.")
+            print(f"Required dimensions: \t dataset {required_input_shape}, \t labels {required_output_shape}.")
 
         # 若不符合，自动改变维度（仅限小维度错误比如28x28->784，大维度错误比如数据和网络不匹配也无能为力）
         if data_set.shape != required_input_shape or labels.shape != required_output_shape:
@@ -225,9 +237,11 @@ class Network(object):
             #data_set = data_set.reshape((data_set.shape[0],data_set.shape[1],-1)) 
             data_set = data_set.reshape(required_input_shape)
             labels = labels.reshape(required_output_shape)
-            print(f"Input changed to: \t dataset {data_set.shape}, \t labels {labels.shape} to match neural network.")           
+            if show == True:
+                print(f"Input changed to: \t dataset {data_set.shape}, \t labels {labels.shape} to match neural network.")           
         else:
-            print("Dimensions matched!")
+            if show == True:
+                print("Dimensions matched!")
         return labels,data_set
 
     def check_dimension(self,sample,show = True):
@@ -252,12 +266,12 @@ class Network(object):
                 print("Dimensions matched!")
         return sample
 
-    def plot():
+    def plot(self):
         """
         绘制学习曲线
         """
-        pass
-
+        plt.plot(self.loss_mean)
+        plt.show()
 
 def get_result(vec):
     '''
@@ -275,7 +289,7 @@ def evaluate(network, test_data_set, test_labels):
     # 若数据维度不符，自动转换维度
     #test_data_set=test_data_set.reshape((test_data_set.shape[0],test_data_set.shape[1],-1))
     #test_labels=test_labels.reshape((test_labels.shape[0],test_labels.shape[1],-1))
-    test_labels,test_data_set=network.check_dimensions(test_labels,test_data_set)
+    test_labels,test_data_set=network.check_dimensions(test_labels,test_data_set,show = False)
     for i in range(total):
         label = get_result(test_labels[i])
         #print(network.predict(test_data_set[i]))
@@ -344,8 +358,8 @@ def house_price():
     
     
     net = Network([13,13,1])
-    net.train(labels=Y_train,data_set=X_train,epoch=1000,rate = 0.7)
-
+    net.train(labels=Y_train,data_set=X_train,epoch=500,freq=50,rate = 0.7,verbose=1)
+    net.plot()
     #X_test = X_test.reshape(X_test.shape[0],13,1)
     for i in range(50):
         # 注意 predict 要求的维度 
@@ -402,19 +416,23 @@ def mnist():
     #Y_test=Y_test.reshape((Y_test.shape[0],Y_test.shape[1],-1))
 
     net = Network([784, 10, 10])
-    #net.check_dimensions(labels=Y_train,data_set=X_train)
-    #net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=4) #准确率达91%, net = Network([784, 16, 10])
-    net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=2,check_dim=True) # check_dim=True 自动处理维度问题
-    #save_modal(net,'net_mnist.pkl')
-    #net = load_modal('net_mnist_all.pkl')
-    print("accuracy:",evaluate(network=net, test_data_set=X_test[:10000], test_labels=Y_test[:10000]))
 
-
+    # net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=4) #准确率达91%, net = Network([784, 16, 10])
+    # 数据集少一些，多训练一些epoch，画图好看
+    net.train(labels=Y_train[:10000],data_set=X_train[:10000],rate=0.2,epoch=20,freq=100,check_dim=True) # check_dim=True 自动处理维度问题
     
+    
+    
+    print("accuracy:",evaluate(network=net, test_data_set=X_test[:10000], test_labels=Y_test[:10000]))
+    net.plot()
     for i in range(1000,1005):
         print("label:",get_result(Y_test[i]),"predict:",get_result(net.predict(X_test[i],check_dim=True))) # 打开check_dim, 自动处理维度问题
         plt.imshow(X_test[i].reshape((28,28)))
         plt.show()
+
+    # 保存与读取模型   
+    # save_modal(net,'net_mnist.pkl')
+    # net = load_modal('net_mnist_all.pkl')
     
 
 
@@ -482,8 +500,8 @@ def fashion_mnist():
 
 
     net = Network([784, 10, 10])
-    net.train(labels=train_labels[:60000],data_set=train_images[:60000],rate=0.5,epoch=3,verbose=1,freq=500)
-    #net.train(labels=Y_train[:10000],data_set=X_train[:10000],rate=0.7,epoch=5, verbose=1, freq = 1000)
+    #net.train(labels=train_labels[:60000],data_set=train_images[:60000],rate=0.5,epoch=3,verbose=1,freq=500)
+    net.train(labels=train_labels[:10000],data_set=train_images[:10000],rate=0.7,epoch=10, verbose=1, freq = 1000)
     #save_modal(net,'net_fashion_matrix_20201112_60000x10_784_128_128_10_rate0.5.pkl')
     #net = load_modal('net_mnist_matrix_20201112_60000x100_784_128_10_rate0.7acc0.9788.pkl')
 
@@ -503,6 +521,7 @@ def fashion_mnist():
         plt.show()
 
     print("accuracy:",evaluate(network=net, test_data_set=test_images[:10000], test_labels=test_labels[:10000]))
+    net.plot()
 
 # 案例四 与或门
 def gate():
@@ -514,27 +533,29 @@ def gate():
     or_label=[[0],[1],[1],[1]]
 
     net_and = Network([2, 1])
-    net_and.train(labels=and_label,data_set=and_data,rate=0.5,epoch=3000)
+    net_and.train(labels=and_label,data_set=and_data,rate=0.3,epoch=1000)
     net_or = Network([2, 1])
-    net_or.train(labels=or_label,data_set=or_data,rate=0.5,epoch=3000,pause_info=0)
-
+    net_or.train(labels=or_label,data_set=or_data,rate=0.3,epoch=1000,pause_info=0)
+    
     print(net_and.predict([0,1],check_dim=True))
     print(net_or.predict([0,1],check_dim=True))
+    net_and.plot()
+    net_or.plot()
 
 
 '''
-最早的版本 net.train 在接受数据的时候，维度为三维数组，转换成numpy格式，例如：
+最早的版本 net.train 在接受数据的时候，每个数据为列向量，维度为三维数组，转换成numpy格式，例如：
 and_data = np.array([[[0],[0]],[[0],[1]],[[1],[0]],[[1],[1]]])
 and_label = np.array([[[0]],[[0]],[[0]],[[1]]])
 现在已经具备了自我调整维度功能，直接输入列表型数据即可
 '''
 if __name__ == '__main__':
 
-    # 三个案例，打开注释以查看    
+    # 几个案例，打开注释以查看    
     # fashion_mnist()
     # gate()
-    # mnist()
-    house_price()
+    mnist()
+    # house_price()
     
     # 一个简单的训练加法器的案例
     # data = [[0,0],[0,1],[1,0],[1,1]]
