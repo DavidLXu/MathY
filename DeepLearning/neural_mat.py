@@ -180,7 +180,7 @@ class Network(object):
                         now_time = time.time()
                         m, s = divmod(now_time-start_time, 60)
                         h, m = divmod(m, 60)
-                        print('epoch %d of %d,\tsample %d of %d,\tloss %f,\ttime used %02d:%02d:%02d' % (i, epoch, d,len(data_set),loss,h,m,s))
+                        print('epoch %d of %d,\tsample %d of %d,\tloss %f,\ttime used %02d:%02d:%02d' % (i+1, epoch, d,len(data_set),loss,h,m,s))
                 self.loss_mean.append(np.mean(loss_list)) # 用于后续画图
             end_time = time.time()
             m, s = divmod(end_time-start_time, 60)
@@ -273,16 +273,34 @@ class Network(object):
         plt.plot(self.loss_mean)
         plt.show()
 
+#### 数据形式的转换 ####
 def get_result(vec):
     '''
-    实现数据类型的转换 one-hot -> integer
+    单个向量的转换 one-hot -> integer
     相当于 np.argmax()
     自动适应 [1,2,5,4] 和 [[1],[2],[5],[4]] 以及numpy型向量
     '''
-    return (list(vec).index(max(vec)))
+    return np.argmax(vec)#(list(vec).index(max(vec)))
+
+def get_results(vec):
+    '''
+    多个向量的转换 one-hot -> integer
+    支持二维list以及numpy二维向量
+    '''
+    return [list(vec[i]).index(max(vec[i])) for i in range(len(vec))]
+
+def get_one_hot(targets, nb_classes):
+    '''
+    可以转换一个或多个变量
+    '''
+    targets = np.array(targets) # 防止不小心传进来list
+    res = np.eye(nb_classes)[np.array(targets).reshape(-1)]
+    return res.reshape(list(targets.shape)+[nb_classes])
 
 
-# one-hot
+
+
+
 def evaluate(network, test_data_set, test_labels):
     error = 0
     total = len(test_data_set)
@@ -309,9 +327,7 @@ def load_modal(path):
         print("Network modal loaded from",pkl_file.name)
         return pickle.load(pkl_file)
 
-def get_one_hot(targets, nb_classes):
-    res = np.eye(nb_classes)[np.array(targets).reshape(-1)]
-    return res.reshape(list(targets.shape)+[nb_classes])
+
 
 
 
@@ -417,14 +433,14 @@ def mnist():
 
     net = Network([784, 10, 10])
 
-    # net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=4) #准确率达91%, net = Network([784, 16, 10])
+    net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=0.7,epoch=4) #准确率达91%, net = Network([784, 16, 10])
     # 数据集少一些，多训练一些epoch，画图好看
-    net.train(labels=Y_train[:10000],data_set=X_train[:10000],rate=0.2,epoch=20,freq=100,check_dim=True) # check_dim=True 自动处理维度问题
+    # net.train(labels=Y_train[:10000],data_set=X_train[:10000],rate=0.2,epoch=20,freq=100,check_dim=True) # check_dim=True 自动处理维度问题
     
     
     
     print("accuracy:",evaluate(network=net, test_data_set=X_test[:10000], test_labels=Y_test[:10000]))
-    net.plot()
+    # net.plot()
     for i in range(1000,1005):
         print("label:",get_result(Y_test[i]),"predict:",get_result(net.predict(X_test[i],check_dim=True))) # 打开check_dim, 自动处理维度问题
         plt.imshow(X_test[i].reshape((28,28)))
@@ -542,6 +558,36 @@ def gate():
     net_and.plot()
     net_or.plot()
 
+# 案例五 鸢尾花
+def iris():
+
+    from sklearn import datasets # 推荐用他的数据库来联系
+    from sklearn.model_selection import train_test_split
+
+    from sklearn.neighbors import KNeighborsClassifier
+
+    iris = datasets.load_iris()
+    iris_X = iris.data
+    iris_y = iris.target
+
+    X_train,X_test,y_train,y_test = train_test_split(iris_X,iris_y,test_size=0.3)
+    y_train = get_one_hot(y_train,3)
+    y_test = get_one_hot(y_test,3)
+
+    net = Network([4,3]) # 不加入隐藏层也可以获得不错的结果
+    net.train(labels=y_train,data_set=X_train,epoch=200)
+
+    print("pred | label")
+    for i in range(len(y_test)):
+        pred_val = net.predict(X_test[i],check_dim=True,show=False)
+        true_val = y_test[i]
+        print(get_result(pred_val),"\t",get_result(true_val))
+
+    #knn = KNeighborsClassifier()
+    #knn.fit(X_train,y_train)
+    #print(knn.predict(X_test))
+
+
 
 '''
 最早的版本 net.train 在接受数据的时候，每个数据为列向量，维度为三维数组，转换成numpy格式，例如：
@@ -554,9 +600,12 @@ if __name__ == '__main__':
     # 几个案例，打开注释以查看    
     # fashion_mnist()
     # gate()
-    mnist()
+    # mnist()
     # house_price()
     
+    iris()
+
+
     # 一个简单的训练加法器的案例
     # data = [[0,0],[0,1],[1,0],[1,1]]
     # label = [[0,1],[1,0],[1,1],[0,0]]
