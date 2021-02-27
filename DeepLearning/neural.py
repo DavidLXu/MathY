@@ -4,10 +4,11 @@
 # input_label: 二维数组，每一个label都是一维数组
 
 import random
-#from numpy import *
 import numpy as np
+from numpy import exp
 from functools import reduce
-from imports import *
+
+#from imports import *
 import pickle # save and read trained network
 import time
 
@@ -327,10 +328,11 @@ if __name__ == '__main__':
     np.save("Y_train",Y_train)
     np.save("Y_test",Y_test)
     '''
-    X_train = np.load("X_train.npy")
-    X_test = np.load("X_test.npy")
-    Y_train = np.load("Y_train.npy")
-    Y_test = np.load("Y_test.npy")
+    dir_path = "mnist-dataset/"
+    X_train = np.load(dir_path+"X_train.npy")
+    X_test = np.load(dir_path+"X_test.npy")
+    Y_train = np.load(dir_path+"Y_train.npy")
+    Y_test = np.load(dir_path+"Y_test.npy")
     net = Network([784, 16, 10])
     net.train(labels=Y_train[:400],data_set=X_train[:400],rate=0.7,epoch=4) #准确率达91%, net = Network([784, 16, 10])
     #net.train(labels=Y_train[:60000],data_set=X_train[:60000],rate=1.4,epoch=2)
