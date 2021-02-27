@@ -564,7 +564,7 @@ def iris():
     from sklearn import datasets # 推荐用他的数据库来联系
     from sklearn.model_selection import train_test_split
 
-    from sklearn.neighbors import KNeighborsClassifier
+    #from sklearn.neighbors import KNeighborsClassifier
 
     iris = datasets.load_iris()
     iris_X = iris.data

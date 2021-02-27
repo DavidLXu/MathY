@@ -91,7 +91,8 @@ Below are some of predefined math functions, mostly elementary functions: (trig 
 -3.3280566969918744e-16		# close to 0
 
 >>> arcsin(0),arcsin(1)		# as you can see, the error gets larger
-(0.0, 1.5519891373698251)	# as the input is far from one											# in reality, computers use CORDIC method
+(0.0, 1.5519891373698251)	# as the input is far from one											
+							# in reality, computers use CORDIC method
 >>> arccos(0),arccos(1)
 (1.5707963267948966, 0.018807189425068812) # same situation
 >>> arctan(0),arctan(10)	# but arctan is surprisingly accurate
@@ -337,3 +338,10 @@ math.exp(), or numpy.sin() numpy.exp().
 ```
 
 ## Neural Networks
+
+In `MathY/DeepLearning`, the basic Artificial Neural Network is implemented in 2 versions: 
+
+* `neural.py` using purely Object-Oriented method to build NN from Node to Network;
+* `neural_mat.py` using numpy array to speed up the whole training process.
+
+时间差：测试一下MNIST 做一个表格放上来
