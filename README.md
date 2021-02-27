@@ -344,4 +344,4 @@ In `MathY/DeepLearning`, the basic Artificial Neural Network is implemented in 2
 * `neural.py` using purely Object-Oriented method to build NN from Node to Network;
 * `neural_mat.py` using numpy array to speed up the whole training process.
 
-时间差：测试一下MNIST 做一个表格放上来
+时间差：测试一下MNIST 做一个表格放上来 
